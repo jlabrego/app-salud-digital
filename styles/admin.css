@@ -1,0 +1,218 @@
+/* HMC Connect - Standalone Administrative Dashboard CSS */
+
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-gray);
+  color: var(--text-dark);
+}
+
+/* Sidebar Navigation */
+.admin-sidebar {
+  width: 260px;
+  background-color: #1E293B; /* Sleek dark admin sidebar */
+  color: #F8FAFC;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-lg) var(--space-md);
+  flex-shrink: 0;
+}
+
+.admin-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin-bottom: var(--space-xl);
+}
+
+.admin-brand span {
+  color: var(--secondary-blue);
+  font-size: 1.8rem;
+}
+
+.admin-nav-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex-grow: 1;
+}
+
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  color: #94A3B8;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.admin-nav-item:hover, .admin-nav-item.active {
+  background-color: rgba(255,255,255,0.08);
+  color: #FFFFFF;
+}
+
+.admin-nav-item span {
+  font-size: 1.4rem;
+}
+
+/* Content Area */
+.admin-content {
+  flex-grow: 1;
+  padding: var(--space-xl);
+  overflow-y: auto;
+  max-width: calc(100% - 260px);
+}
+
+/* KPI Tickers */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+@media (max-width: 1024px) {
+  .kpi-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.kpi-card {
+  background-color: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card h4 {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-xs);
+}
+
+.kpi-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.kpi-val {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.kpi-trend {
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.kpi-trend.ok {
+  color: var(--success-green);
+}
+
+.kpi-trend.warning {
+  color: var(--warning-orange);
+}
+
+/* Heatmap Grid */
+.heatmap-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm);
+}
+
+.heatmap-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.heatmap-row.success-grid {
+  background-color: var(--success-light);
+  color: var(--success-green);
+  border-left: 5px solid var(--success-green);
+}
+
+.heatmap-row.warning-grid {
+  background-color: var(--warning-light);
+  color: #E65100;
+  border-left: 5px solid var(--warning-orange);
+}
+
+.heatmap-row.danger-grid {
+  background-color: var(--danger-light);
+  color: var(--danger-red);
+  border-left: 5px solid var(--danger-red);
+}
+
+/* Revenue Chart Styles */
+.chart-card-viewport {
+  width: 100%;
+  height: 220px;
+  background-color: var(--bg-gray);
+  border-radius: var(--radius-sm);
+  padding: var(--space-md);
+}
+
+.chart-svg-elem {
+  width: 100%;
+  height: 100%;
+}
+
+/* Claim action buttons */
+.claim-btn {
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.claim-btn.approve {
+  background-color: var(--success-light);
+  color: var(--success-green);
+}
+
+.claim-btn.reject {
+  background-color: var(--danger-light);
+  color: var(--danger-red);
+}
+
+/* Status pills */
+.status-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 12px;
+}
+.status-pill.pendiente {
+  background-color: var(--warning-light);
+  color: #E65100;
+}
+.status-pill.aprobada {
+  background-color: var(--success-light);
+  color: var(--success-green);
+}
+.status-pill.rechazada {
+  background-color: var(--danger-light);
+  color: var(--danger-red);
+}

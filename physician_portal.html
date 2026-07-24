@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HMC Connect Pro - Portal Médico</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/physician.css">
+</head>
+<body>
+  <div class="portal-container fade-in">
+    <!-- Sidebar Navigation -->
+    <aside class="portal-sidebar">
+      <div class="portal-brand">
+        <span class="material-symbols-rounded">favorite</span>
+        HMC Connect Pro
+      </div>
+
+      <div class="portal-user-profile">
+        <img src="assets/doctor_male_profile.png" alt="Dr. Carlos Valladares" class="portal-user-avatar" onerror="this.src='https://via.placeholder.com/150'">
+        <div class="portal-user-meta">
+          <h4>Dr. C. Valladares</h4>
+          <span>Cardiólogo Clínico</span>
+        </div>
+      </div>
+
+      <nav class="portal-nav-list">
+        <button class="portal-nav-item active" data-tab="dashboard">
+          <span class="material-symbols-rounded">dashboard</span>
+          Inicio y Agenda
+        </button>
+        <button class="portal-nav-item" data-tab="consult">
+          <span class="material-symbols-rounded">edit_note</span>
+          Consulta EMR
+        </button>
+        <button class="portal-nav-item" style="margin-top: auto; color: var(--danger-red);">
+          <span class="material-symbols-rounded">logout</span>
+          Cerrar Sesión
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="portal-content">
+      <!-- 1. DASHBOARD & QUEUE VIEW -->
+      <div id="portal-view-dashboard">
+        <div class="portal-top-bar">
+          <div>
+            <h1 class="portal-page-title">Panel de Control Médico</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Honduras Medical Center &bull; Tegucigalpa</p>
+          </div>
+          <div style="font-weight:700; color:var(--primary-blue);">24 de Julio, 2026</div>
+        </div>
+
+        <!-- Metrics widgets -->
+        <div class="portal-metrics-row slide-up">
+          <div class="portal-metric-card">
+            <h5>Pacientes Hoy</h5>
+            <div class="portal-metric-val">12</div>
+          </div>
+          <div class="portal-metric-card">
+            <h5>En Cola</h5>
+            <div class="portal-metric-val" style="color: var(--warning-orange)">3</div>
+          </div>
+          <div class="portal-metric-card">
+            <h5>Completados</h5>
+            <div class="portal-metric-val" style="color: var(--success-green)">1</div>
+          </div>
+          <div class="portal-metric-card">
+            <h5>Tiempo Promedio</h5>
+            <div class="portal-metric-val">22 min</div>
+          </div>
+        </div>
+
+        <div class="portal-dashboard-grid slide-up" style="animation-delay: 0.1s;">
+          <!-- Patient Queue Panel -->
+          <div class="portal-panel-card">
+            <div class="portal-panel-header">
+              <h3 class="portal-panel-title">Fila de Espera de Consulta</h3>
+              <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">Triage Automatizado</span>
+            </div>
+            
+            <table class="queue-table">
+              <thead>
+                <tr>
+                  <th>Paciente</th>
+                  <th>Edad</th>
+                  <th>Motivo de Visita</th>
+                  <th>Hora</th>
+                  <th>Estado</th>
+                  <th>Acción</th>
+                </tr>
+              </thead>
+              <tbody id="queue-table-body">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Doctor Agenda list -->
+          <div class="portal-panel-card">
+            <h3 class="portal-panel-title" style="margin-bottom: var(--space-md);">Mi Agenda Hoy</h3>
+            <div class="agenda-list">
+              <div class="agenda-item">
+                <span class="agenda-time">09:30 AM</span>
+                <div class="agenda-details">
+                  <div class="agenda-patient">Andrés Mendoza Salgado</div>
+                  <div class="agenda-type">Chequeo Control - Presencial</div>
+                </div>
+              </div>
+              <div class="agenda-item">
+                <span class="agenda-time">10:15 AM</span>
+                <div class="agenda-details">
+                  <div class="agenda-patient">Carmen Elena Zelaya</div>
+                  <div class="agenda-type">Primera Cita - Presencial</div>
+                </div>
+              </div>
+              <div class="agenda-item">
+                <span class="agenda-time">11:00 AM</span>
+                <div class="agenda-details">
+                  <div class="agenda-patient">Manuel de Jesús Cruz</div>
+                  <div class="agenda-type">Seguimiento Pos-Angioplastia</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. CLINICAL CONSULTATION / EMR VIEW -->
+      <div id="portal-view-consult" class="hidden">
+        <div class="portal-top-bar">
+          <div>
+            <h1 class="portal-page-title">Consola de Consulta Digital</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Expediente Clínico Electrónico (EMR) Conectado</p>
+          </div>
+          <button class="start-consult-btn ripple-btn" id="emr-finish-consult" style="background-color: var(--success-green);">
+            <span class="material-symbols-rounded">check</span> Guardar Consulta
+          </button>
+        </div>
+
+        <!-- Active Patient Banner Header -->
+        <div class="emr-patient-header slide-up">
+          <div class="emr-patient-info">
+            <div class="patient-initials" style="width:46px; height:46px; font-size:1.1rem;">AM</div>
+            <div>
+              <h2 style="font-size:1.25rem; font-weight:800;" id="emr-patient-name">Andrés Mendoza Salgado</h2>
+              <span style="font-size:0.85rem; color:var(--text-muted);" id="emr-patient-meta">Código: HMC-98231-AM | Edad: 34 años | Sangre: O+</span>
+            </div>
+          </div>
+          
+          <div class="emr-alert-badge">
+            <span class="material-symbols-rounded">warning</span>
+            <strong>ALERGIA: PENICILINA</strong>
+          </div>
+        </div>
+
+        <!-- Two Column Consultation Area -->
+        <div class="emr-consult-layout slide-up" style="animation-delay: 0.1s;">
+          <!-- Left Column: Patient Records Review -->
+          <div class="portal-panel-card">
+            <div class="emr-tabs-bar">
+              <button class="emr-tab-btn active" data-view="history">Receta y Notas</button>
+              <button class="emr-tab-btn" data-view="vitals">Gráfico de Presión</button>
+              <button class="emr-tab-btn" data-view="labs">Laboratorio e Imágenes</button>
+            </div>
+
+            <!-- EMR Subview: Clinical Notes input -->
+            <div id="emr-view-history" class="emr-sub-view">
+              <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:8px;">Evolución Clínica y Diagnóstico</h4>
+              <textarea class="emr-notes-textarea" id="emr-notes-input" placeholder="Comienza a escribir la nota médica..."></textarea>
+            </div>
+
+            <!-- EMR Subview: Vitals Trends -->
+            <div id="emr-view-vitals" class="emr-sub-view hidden">
+              <h4 style="font-size:0.95rem; font-weight:700; margin-bottom:8px;">Curva Histórica Presión Arterial</h4>
+              <div class="emr-chart-viewport">
+                <svg class="emr-chart-svg" id="emr-bp-svg"></svg>
+              </div>
+            </div>
+
+            <!-- EMR Subview: Lab/Imaging Results lists -->
+            <div id="emr-view-labs" class="emr-sub-view hidden">
+              <div id="emr-patient-lab-list">
+                <!-- populated dynamically -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Consultation actions (Prescription & Telehealth) -->
+          <div class="portal-panel-card" style="display:flex; flex-direction:column; justify-content:space-between; min-height:480px;">
+            <!-- Telemedicine Video Window -->
+            <div>
+              <h3 class="portal-panel-title" style="margin-bottom: 8px;">Videoconsulta HMC</h3>
+              <div class="emr-telehealth-video">
+                <video class="emr-video-feed" id="emr-video-feed-element" autoplay playsinline muted></video>
+                <div class="emr-video-label">Cámara de Paciente</div>
+              </div>
+            </div>
+
+            <!-- E-Prescription Form -->
+            <div>
+              <h3 class="portal-panel-title">Prescribir Medicamento</h3>
+              <div class="emr-prescription-builder">
+                <div class="rx-form-row">
+                  <input type="text" id="rx-input-med" class="rx-form-input" placeholder="Medicamento (e.g. Losartán 50mg)">
+                  <input type="text" id="rx-input-dose" class="rx-form-input" placeholder="Dosis (e.g. 1 diaria)">
+                  <input type="text" id="rx-input-instr" class="rx-form-input" placeholder="Indicación (e.g. Por 90 días)">
+                </div>
+                <button class="rx-form-btn ripple-btn" id="rx-add-btn">Añadir al Borrador</button>
+              </div>
+
+              <!-- Prescribed items listing -->
+              <div style="margin-top:12px;">
+                <h4 style="font-size:0.85rem; font-weight:700; color:var(--text-muted); margin-bottom:4px;">Receta Borrador:</h4>
+                <div class="rx-added-list" id="rx-draft-list">
+                  <!-- items added dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <button class="onboarding-btn ripple-btn" id="emr-submit-prescription" style="margin-top: 16px; border-radius: 8px; width: 100%;">
+              Firma Digital y Enviar Receta
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/physician.js"></script>
+</body>
+</html>

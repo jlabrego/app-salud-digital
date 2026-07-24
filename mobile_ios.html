@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HMC Connect - App Paciente (iOS)</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/ios.css">
+</head>
+<body>
+  <!-- Standalone Phone Shell Viewport -->
+  <div class="phone-viewport fade-in">
+    <!-- iOS Top Status Bar -->
+    <div class="ios-status-bar">
+      <span class="time">09:41</span>
+      <div class="dynamic-island"></div>
+      <div class="status-icons">
+        <span class="material-symbols-rounded">signal_cellular_4_bar</span>
+        <span class="material-symbols-rounded">wifi</span>
+        <span class="material-symbols-rounded">battery_charging_80</span>
+      </div>
+    </div>
+
+    <!-- 1. SPLASH SCREEN -->
+    <div class="screen splash-screen" id="screen-splash">
+      <div class="splash-logo-container">
+        <span class="material-symbols-rounded">favorite</span>
+        <h1 class="splash-title">HMC Connect</h1>
+        <p style="opacity: 0.8; font-size: 0.9rem; margin-top: 4px;">Honduras Medical Center</p>
+      </div>
+    </div>
+
+    <!-- 2. ONBOARDING SCREEN -->
+    <div class="screen onboarding-screen hidden" id="screen-onboarding">
+      <div class="onboarding-slide fade-in">
+        <div class="onboarding-image-box">
+          <span class="material-symbols-rounded">clinical_notes</span>
+        </div>
+        <h2 class="onboarding-title">Tu salud en tus manos</h2>
+        <p class="onboarding-desc">
+          Accede a tu expediente clínico completo, recetas electrónicas y resultados de laboratorio al instante desde cualquier lugar.
+        </p>
+      </div>
+      <button class="onboarding-btn ripple-btn" data-nav="login">
+        Comenzar
+        <span class="material-symbols-rounded">arrow_forward</span>
+      </button>
+    </div>
+
+    <!-- 3. LOGIN SCREEN -->
+    <div class="screen hidden" id="screen-login" style="padding-top: var(--space-xl);">
+      <div class="login-header-box fade-in">
+        <span class="material-symbols-rounded">favorite</span>
+        <h2 class="onboarding-title" style="margin-top: var(--space-sm);">HMC Connect</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Bienvenido de vuelta. Inicia sesión.</p>
+      </div>
+
+      <div class="login-input-group slide-up">
+        <div class="ios-input-wrapper">
+          <span class="material-symbols-rounded">mail</span>
+          <input type="email" placeholder="Correo electrónico" value="andres.mendoza@gmail.com">
+        </div>
+        <div class="ios-input-wrapper">
+          <span class="material-symbols-rounded">lock</span>
+          <input type="password" placeholder="Contraseña" value="••••••••">
+        </div>
+        
+        <button class="onboarding-btn ripple-btn" style="margin-top: var(--space-md);" data-nav="dashboard">
+          Entrar
+        </button>
+      </div>
+
+      <div class="biometric-login-row slide-up" style="animation-delay: 0.1s;">
+        <button class="biometric-btn" id="trigger-biometric-auth">
+          <span class="material-symbols-rounded">faceid</span>
+          <span>Ingresar con Face ID</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 4. BIOMETRIC FACE ID SCREEN -->
+    <div class="screen biometric-screen hidden" id="screen-biometric">
+      <div class="biometric-scanner-ring" id="biometric-scanner-ring">
+        <span class="material-symbols-rounded face-icon">faceid</span>
+      </div>
+      <div class="biometric-status-text" id="biometric-status-text">Iniciando escaneo Face ID...</div>
+      <span class="material-symbols-rounded biometric-success-icon" id="biometric-success-icon">check_circle</span>
+    </div>
+
+    <!-- 5. PATIENT DASHBOARD / HOME -->
+    <div class="screen hidden" id="screen-dashboard">
+      <div class="dashboard-greeting-row">
+        <div>
+          <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Hola, ¡buenos días!</p>
+          <h2 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px;">Andrés Mendoza</h2>
+        </div>
+        <img src="https://via.placeholder.com/150" class="dashboard-avatar" id="patient-avatar" alt="Avatar">
+      </div>
+
+      <div class="dashboard-motivation-card slide-up">
+        <span class="material-symbols-rounded">lightbulb</span>
+        <p id="dashboard-motivation">Mantenerte hidratado y realizar 30 min de ejercicio ayuda a controlar la hipertensión.</p>
+      </div>
+
+      <!-- Upcoming Appointment Banner -->
+      <div class="dashboard-apt-card slide-up">
+        <div class="dashboard-apt-header">
+          <img src="assets/doctor_male_profile.png" class="dashboard-apt-doc-img" alt="Dr. Valladares">
+          <div class="dashboard-apt-meta">
+            <h4>Dr. Carlos Valladares</h4>
+            <span>Consulta de Cardiología</span>
+          </div>
+        </div>
+        <div class="dashboard-apt-time-row">
+          <span><span class="material-symbols-rounded">event</span> 28 de Julio, 2026</span>
+          <span><span class="material-symbols-rounded">schedule</span> 09:30 AM</span>
+        </div>
+        <button class="dashboard-apt-action-btn ripple-btn" data-nav="appointments">
+          Gestionar Cita
+        </button>
+      </div>
+
+      <!-- Vitals Section -->
+      <h3 class="profile-section-title">Signos Vitales Hoy</h3>
+      <div class="vitals-grid">
+        <div class="vital-card">
+          <div class="vital-card-header">
+            <span>Frec. Cardiaca</span>
+            <span class="material-symbols-rounded pulse-icon">favorite</span>
+          </div>
+          <div class="vital-card-body">
+            <span class="vital-value" id="vital-hr-value">72</span>
+            <span class="vital-unit">lpm</span>
+          </div>
+          <div class="vital-card-footer">
+            <span class="vital-status normal">Normal</span>
+            <div class="vital-sparkline-box" id="hr-sparkline"></div>
+          </div>
+        </div>
+        <div class="vital-card">
+          <div class="vital-card-header">
+            <span>Presión Art.</span>
+            <span class="material-symbols-rounded" style="color: var(--primary-blue)">blood_pressure</span>
+          </div>
+          <div class="vital-card-body">
+            <span class="vital-value" id="vital-bp-value" style="font-size: 1.4rem;">118/78</span>
+            <span class="vital-unit">mmHg</span>
+          </div>
+          <div class="vital-card-footer">
+            <span class="vital-status normal">Óptima</span>
+          </div>
+        </div>
+        <div class="vital-card">
+          <div class="vital-card-header">
+            <span>Oxígeno</span>
+            <span class="material-symbols-rounded" style="color: var(--secondary-blue)">air</span>
+          </div>
+          <div class="vital-card-body">
+            <span class="vital-value" id="vital-oxy-value">98</span>
+            <span class="vital-unit">%</span>
+          </div>
+          <div class="vital-card-footer">
+            <span class="vital-status normal">Normal</span>
+            <div class="vital-sparkline-box" id="oxy-sparkline"></div>
+          </div>
+        </div>
+        <div class="vital-card">
+          <div class="vital-card-header">
+            <span>Temperatura</span>
+            <span class="material-symbols-rounded" style="color: var(--warning-orange)">thermostat</span>
+          </div>
+          <div class="vital-card-body">
+            <span class="vital-value" id="vital-temp-value">36.6</span>
+            <span class="vital-unit">°C</span>
+          </div>
+          <div class="vital-card-footer">
+            <span class="vital-status normal">Normal</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Medications tracker -->
+      <div class="meds-overview-card slide-up">
+        <div class="meds-overview-progress">
+          <svg class="meds-ring-svg">
+            <circle class="meds-ring-bg" cx="28" cy="28" r="24"></circle>
+            <circle class="meds-ring-active" id="dashboard-progress-ring" cx="28" cy="28" r="24"></circle>
+          </svg>
+          <div class="meds-overview-text">
+            <h4>Medicamentos</h4>
+            <p id="meds-progress-text">2/3 Completados</p>
+          </div>
+        </div>
+        <span class="material-symbols-rounded" style="color: var(--text-muted);">arrow_forward_ios</span>
+      </div>
+
+      <div class="meds-checklist" id="meds-checklist">
+        <!-- populated dynamically -->
+      </div>
+    </div>
+
+    <!-- 6. DOCTOR SEARCH -->
+    <div class="screen hidden" id="screen-doctor-search">
+      <div class="ios-header">
+        <h2 class="ios-large-title">Buscar Médico</h2>
+      </div>
+
+      <div class="ios-search-bar">
+        <span class="material-symbols-rounded">search</span>
+        <input type="text" id="doctor-search-input" placeholder="Nombre o especialidad (Cardiología...)">
+      </div>
+
+      <div id="doctors-list-container" style="display:flex; flex-direction:column; gap: var(--space-xs);">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+
+    <!-- 7. DOCTOR PROFILE -->
+    <div class="screen hidden" id="screen-doctor-profile">
+      <div class="ios-header">
+        <button class="ios-header-back" data-nav="doctor-search">
+          <span class="material-symbols-rounded">chevron_left</span>
+          Atrás
+        </button>
+      </div>
+
+      <div class="profile-doctor-hero">
+        <img id="profile-doc-avatar" src="https://via.placeholder.com/150" alt="Doctor">
+        <h3 id="profile-doc-name" style="font-size: 1.3rem; font-weight:800;">Dr. Carlos Valladares</h3>
+        <span id="profile-doc-specialty" style="color:var(--primary-blue); font-weight:600; font-size:0.95rem;">Cardiólogo</span>
+        <br>
+        <div class="profile-rating-badge">
+          <span class="material-symbols-rounded">star</span>
+          <span id="profile-doc-rating">4.9 (120 reviews)</span>
+        </div>
+      </div>
+
+      <h3 class="profile-section-title">Sobre el Especialista</h3>
+      <p class="profile-bio-text" id="profile-doc-bio">
+        Especialista en prevención de enfermedades cardiovasculares...
+      </p>
+
+      <h3 class="profile-section-title">Educación</h3>
+      <p class="profile-bio-text" id="profile-doc-education" style="margin-bottom:var(--space-md);">
+        UNAH, Postgrado de cardiología...
+      </p>
+
+      <h3 class="profile-section-title">Seleccionar Fecha</h3>
+      <div class="ios-inline-calendar">
+        <button class="calendar-day-btn">
+          <span class="day-name">LUN</span>
+          <span class="day-num">27</span>
+        </button>
+        <button class="calendar-day-btn">
+          <span class="day-name">MAR</span>
+          <span class="day-num">28</span>
+        </button>
+        <button class="calendar-day-btn">
+          <span class="day-name">MIE</span>
+          <span class="day-num">29</span>
+        </button>
+        <button class="calendar-day-btn">
+          <span class="day-name">JUE</span>
+          <span class="day-num">30</span>
+        </button>
+        <button class="calendar-day-btn">
+          <span class="day-name">VIE</span>
+          <span class="day-num">31</span>
+        </button>
+      </div>
+
+      <h3 class="profile-section-title">Horarios Disponibles</h3>
+      <div class="time-slots-grid" id="profile-doc-slots">
+        <!-- slots here -->
+      </div>
+
+      <button class="onboarding-btn ripple-btn" id="confirm-booking-action" style="margin-bottom: var(--space-xl);">
+        Reservar Cita
+      </button>
+    </div>
+
+    <!-- 8. APPOINTMENT CONFIRMATION -->
+    <div class="screen hidden" id="screen-booking-confirm" style="justify-content: center; align-items: center; text-align: center; background-color: #FFFFFF;">
+      <span class="material-symbols-rounded" style="font-size: 5rem; color: var(--success-green); margin-bottom: var(--space-md);">check_circle</span>
+      <h2 class="onboarding-title">¡Cita Programada!</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: var(--space-lg); max-width: 280px; line-height: 1.5;">
+        Tu reserva ha sido procesada con éxito y se encuentra registrada en el sistema de HMC.
+      </p>
+
+      <div class="appointment-card" style="width:100%; text-align: left;">
+        <h4 id="confirm-doctor-name" style="font-weight:700;">Dr. Carlos Valladares</h4>
+        <p id="confirm-doctor-specialty" style="color:var(--primary-blue); font-size:0.85rem; margin-bottom:8px;">Cardiología</p>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+          <div><strong>Fecha:</strong> <span id="confirm-date-time">Martes 28 de Julio, 09:30 AM</span></div>
+          <div><strong>Modalidad:</strong> <span id="confirm-type">Presencial</span></div>
+        </div>
+      </div>
+
+      <button class="onboarding-btn ripple-btn" data-nav="dashboard">
+        Regresar al Inicio
+      </button>
+    </div>
+
+    <!-- 9. APPOINTMENTS TAB -->
+    <div class="screen hidden" id="screen-appointments">
+      <div class="ios-header">
+        <h2 class="ios-large-title">Mis Citas</h2>
+      </div>
+
+      <div class="appointment-tabs-bar">
+        <button class="appointment-tab active">Próximas</button>
+        <button class="appointment-tab">Historial</button>
+      </div>
+
+      <div id="active-appointments-list">
+        <!-- dynamic appointments list -->
+      </div>
+      <div id="past-appointments-list" style="margin-top: 16px;">
+        <!-- completed appointments -->
+      </div>
+    </div>
+
+    <!-- 10. TELEHEALTH WAITING ROOM -->
+    <div class="screen hidden" id="screen-telehealth-waiting">
+      <div class="ios-header">
+        <button class="ios-header-back" data-nav="appointments">
+          <span class="material-symbols-rounded">chevron_left</span>
+          Salir de Sala
+        </button>
+      </div>
+
+      <div class="telehealth-waiting-box">
+        <div class="waiting-countdown-circle">
+          <span class="time-val" id="waiting-countdown-timer">00:10</span>
+          <span class="label">Espera</span>
+        </div>
+        
+        <img id="waiting-doctor-avatar" src="https://via.placeholder.com/150" class="doctor-avatar" style="width: 80px; height:80px; margin: 0 auto 16px;" alt="Doctor">
+        <h3 id="waiting-doctor-name" style="font-size: 1.25rem; font-weight:800;">Dr. Carlos Valladares</h3>
+        <span id="waiting-doctor-specialty" style="color:var(--primary-blue); font-weight:600;">Cardiología</span>
+        
+        <p style="color: var(--text-muted); font-size: 0.88rem; max-width: 280px; margin: 24px auto; line-height: 1.5;">
+          El médico está revisando tu expediente clínico antes de iniciar la videoconsulta. Por favor no cierres la aplicación.
+        </p>
+      </div>
+    </div>
+
+    <!-- 11. TELEHEALTH CALL VIEW -->
+    <div class="screen telehealth-console-screen hidden" id="screen-telehealth-call">
+      <div class="video-call-viewport">
+        <!-- User camera element -->
+        <video id="local-video-feed" class="main-video-feed" autoplay playsinline muted></video>
+        <!-- Physician PIP placeholder -->
+        <img class="local-pip-feed" id="pip-physician" src="assets/doctor_male_profile.png" alt="Doctor feed">
+        
+        <div class="remote-physician-info">
+          <strong id="call-doctor-name">Dr. Carlos Valladares</strong>
+          <span id="call-doctor-specialty" style="font-size:0.75rem; opacity:0.85; margin-left:6px;">En línea</span>
+        </div>
+
+        <div class="call-control-overlay">
+          <button class="call-btn"><span class="material-symbols-rounded">mic</span></button>
+          <button class="call-btn"><span class="material-symbols-rounded">videocam</span></button>
+          <button class="call-btn end" id="telehealth-hangup"><span class="material-symbols-rounded">call_end</span></button>
+        </div>
+      </div>
+
+      <div class="call-chat-section">
+        <div class="chat-history" id="call-chat-history">
+          <!-- populated dynamically -->
+        </div>
+        <div class="chat-input-bar">
+          <input type="text" id="call-chat-input" placeholder="Mensaje seguro...">
+          <button class="chat-send-btn" id="call-chat-send">
+            <span class="material-symbols-rounded">send</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 12. MEDICAL RECORDS TAB -->
+    <div class="screen hidden" id="screen-records">
+      <div class="ios-header">
+        <h2 class="ios-large-title">Expediente</h2>
+      </div>
+
+      <div class="records-selector-tabs">
+        <button class="records-tab-btn active" data-filter="labs">Laboratorio</button>
+        <button class="records-tab-btn" data-filter="imaging">Imágenes</button>
+        <button class="records-tab-btn" data-filter="rx">Recetas</button>
+      </div>
+
+      <div id="records-list-container">
+        <!-- records list populated dynamically -->
+      </div>
+    </div>
+
+    <!-- 13. RECORD DETAIL VIEW -->
+    <div class="screen hidden" id="screen-record-detail">
+      <div class="ios-header">
+        <button class="ios-header-back" data-nav="records">
+          <span class="material-symbols-rounded">chevron_left</span>
+          Expediente
+        </button>
+      </div>
+
+      <h2 class="ios-large-title" id="detail-title" style="font-size: 1.45rem; line-height: 1.3;">Estudio Clínico</h2>
+      <p id="detail-subtitle" style="color:var(--text-muted); font-size:0.8rem; margin-bottom: var(--space-md);">Fecha del estudio</p>
+
+      <div id="detail-dynamic-content">
+        <!-- populated dynamically -->
+      </div>
+    </div>
+
+    <!-- 14. QR MEDICAL CARD -->
+    <div class="screen hidden" id="screen-qr-card">
+      <div class="ios-header">
+        <h2 class="ios-large-title">Tarjeta HMC</h2>
+      </div>
+      
+      <p style="color: var(--text-muted); font-size: 0.85rem; text-align: center; margin-bottom: 8px;">Presiona la tarjeta para voltearla y ver tu información médica.</p>
+
+      <div class="qr-card-container">
+        <div class="qr-card-flip-wrapper">
+          <!-- Front Side -->
+          <div class="qr-card-face front">
+            <div class="qr-front-header">
+              <h3>HMC Connect</h3>
+              <span class="material-symbols-rounded">nest_heart_sensor</span>
+            </div>
+            
+            <div class="qr-big-code-box">
+              <span class="material-symbols-rounded">qr_code_2</span>
+            </div>
+
+            <div class="qr-front-footer">
+              <strong style="display: block; font-size: 1rem;">Andrés Mendoza Salgado</strong>
+              <span>ID: HMC-98231-AM</span>
+            </div>
+          </div>
+          <!-- Back Side -->
+          <div class="qr-card-face back">
+            <div class="qr-back-header">
+              <h4>Ficha Médica de Emergencia</h4>
+              <span>Honduras Medical Center</span>
+            </div>
+            
+            <div class="qr-back-details">
+              <div class="qr-back-row">
+                <span class="label">Tipo de Sangre</span>
+                <span class="val" style="color: var(--danger-red); font-size: 1.2rem;">O Positivo (O+)</span>
+              </div>
+              <div class="qr-back-row">
+                <span class="label">Alergias</span>
+                <span class="val">Penicilina, Polen</span>
+              </div>
+              <div class="qr-back-row">
+                <span class="label">Condición Crónica</span>
+                <span class="val">Hipertensión Arterial Leve</span>
+              </div>
+              <div class="qr-back-row">
+                <span class="label">Contacto de Emergencia</span>
+                <span class="val">Gabriela de Mendoza (Esposa) <br> +504 9982-3341</span>
+              </div>
+            </div>
+
+            <div class="qr-back-footer">
+              USAR EN CASO DE EMERGENCIA MÉDICA
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 15. SETTINGS SCREEN -->
+    <div class="screen hidden" id="screen-settings">
+      <div class="ios-header">
+        <h2 class="ios-large-title">Ajustes</h2>
+      </div>
+
+      <div class="settings-menu-list">
+        <div class="settings-item">
+          <div class="settings-meta">
+            <span class="material-symbols-rounded icon">dark_mode</span>
+            <span>Modo Oscuro</span>
+          </div>
+          <div class="ios-switch-wrapper">
+            <input type="checkbox" id="dark-mode-toggle" class="ios-switch-input">
+            <span class="ios-switch-slider"></span>
+          </div>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-meta">
+            <span class="material-symbols-rounded icon">shield</span>
+            <span>Privacidad y HIPAA</span>
+          </div>
+          <span class="material-symbols-rounded" style="color:var(--text-muted);">arrow_forward_ios</span>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-meta">
+            <span class="material-symbols-rounded icon">contact_phone</span>
+            <span>Contactos de Emergencia</span>
+          </div>
+          <span class="material-symbols-rounded" style="color:var(--text-muted);">arrow_forward_ios</span>
+        </div>
+
+        <div class="settings-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+          <strong style="font-size:0.95rem;">Seguro Médico Activo</strong>
+          <p style="font-size:0.8rem; color:var(--text-muted);">Ficohsa Seguros &bull; POL-88329-HMC</p>
+          <span style="font-size: 0.75rem; background-color: var(--success-light); color:var(--success-green); padding:2px 8px; border-radius:4px; font-weight:700;">Cobertura 85%</span>
+        </div>
+      </div>
+
+      <button class="onboarding-btn ripple-btn" style="margin-top: 32px; background-color: var(--danger-red);" data-nav="login">
+        Cerrar Sesión
+      </button>
+    </div>
+
+    <!-- iOS Bottom Navigation Tab-Bar -->
+    <nav class="ios-tab-bar glass bottom-nav hidden">
+      <button class="nav-item active" data-tab="dashboard" data-nav="dashboard">
+        <span class="material-symbols-rounded">home</span>
+        Inicio
+      </button>
+      <button class="nav-item" data-tab="doctor-search" data-nav="doctor-search">
+        <span class="material-symbols-rounded">medical_services</span>
+        Médicos
+      </button>
+      <button class="nav-item" data-tab="appointments" data-nav="appointments">
+        <span class="material-symbols-rounded">calendar_today</span>
+        Citas
+      </button>
+      <button class="nav-item" data-tab="records" data-nav="records">
+        <span class="material-symbols-rounded">folder_open</span>
+        Expediente
+      </button>
+      <button class="nav-item" data-tab="settings" data-nav="settings">
+        <span class="material-symbols-rounded">settings</span>
+        Ajustes
+      </button>
+    </nav>
+
+    <!-- iOS Home Swipe gesture line -->
+    <div class="ios-home-indicator"></div>
+  </div>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/mobile.js"></script>
+</body>
+</html>

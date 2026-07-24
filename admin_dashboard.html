@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HMC Connect - Dashboard Ejecutivo</title>
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="styles/admin.css">
+</head>
+<body>
+  <div class="admin-container fade-in">
+    <!-- Sidebar Navigation -->
+    <aside class="admin-sidebar">
+      <div class="admin-brand">
+        <span class="material-symbols-rounded">favorite</span>
+        HMC Connect Admin
+      </div>
+
+      <nav class="admin-nav-list">
+        <button class="admin-nav-item active" data-tab="overview">
+          <span class="material-symbols-rounded">bar_chart</span>
+          Resumen Ejecutivo
+        </button>
+        <button class="admin-nav-item" data-tab="claims">
+          <span class="material-symbols-rounded">payments</span>
+          Reclamaciones y Seguros
+        </button>
+        <button class="admin-nav-item" style="margin-top: auto; color: #EF4444;">
+          <span class="material-symbols-rounded">logout</span>
+          Cerrar Sesión
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content Panel -->
+    <main class="admin-content">
+      <!-- 1. EXECUTIVE OVERVIEW VIEW -->
+      <div id="admin-view-overview">
+        <div class="portal-top-bar">
+          <div>
+            <h1 class="portal-page-title">Hospital Analytics Dashboard</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Honduras Medical Center &bull; Tegucigalpa HQ</p>
+          </div>
+          <div style="font-weight:700; color:var(--primary-blue);">24 de Julio, 2026</div>
+        </div>
+
+        <!-- KPI Ticker Metrics -->
+        <div class="kpi-row slide-up">
+          <div class="kpi-card">
+            <h4>Ocupación Hospitalaria</h4>
+            <div class="kpi-value-row">
+              <span class="kpi-val" id="kpi-occupancy-val">84%</span>
+              <span class="kpi-trend warning">+3.2% vs mes ant.</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <h4>Ingresos Diarios</h4>
+            <div class="kpi-value-row">
+              <span class="kpi-val" id="kpi-revenue-val">L. 1.84M</span>
+              <span class="kpi-trend ok">+14.8% vs meta</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <h4>Satisfacción Paciente</h4>
+            <div class="kpi-value-row">
+              <span class="kpi-val" id="kpi-satisfaction-val">4.82/5.0</span>
+              <span class="kpi-trend ok">+0.12 pts</span>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <h4>Médicos Activos</h4>
+            <div class="kpi-value-row">
+              <span class="kpi-val" id="kpi-doctors-val">68</span>
+              <span class="kpi-trend ok">En Turno</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts and maps split -->
+        <div class="portal-dashboard-grid slide-up" style="animation-delay: 0.1s;">
+          <!-- Revenue Line Chart -->
+          <div class="portal-panel-card">
+            <div class="portal-panel-header">
+              <h3 class="portal-panel-title">Evolución de Ingresos (Esta Semana)</h3>
+              <span style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">Cifras en Millones Lempiras (L.)</span>
+            </div>
+            
+            <div class="chart-card-viewport">
+              <svg class="chart-svg-elem" id="admin-revenue-svg"></svg>
+            </div>
+          </div>
+
+          <!-- Hospital Wing Heatmap -->
+          <div class="portal-panel-card">
+            <h3 class="portal-panel-title" style="margin-bottom: var(--space-md);">Ocupación por Departamentos</h3>
+            <div class="heatmap-container" id="admin-heatmap-container">
+              <!-- populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. BILLING & CLAIMS LIST VIEW -->
+      <div id="admin-view-claims" class="hidden">
+        <div class="portal-top-bar">
+          <div>
+            <h1 class="portal-page-title">Gestión de Reclamaciones de Seguros</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem;">Facturación unificada y aprobación de coberturas médicas.</p>
+          </div>
+        </div>
+
+        <!-- Claims Queue table -->
+        <div class="portal-panel-card slide-up">
+          <div class="portal-panel-header">
+            <h3 class="portal-panel-title">Reclamaciones Médicas Recientes</h3>
+          </div>
+
+          <table class="queue-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Paciente</th>
+                <th>Aseguradora</th>
+                <th>Departamento</th>
+                <th>Monto Total</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="claims-table-body">
+              <!-- Populated dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/mockData.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
