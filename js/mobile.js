@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Mobile Navigation Router ---
   const screens = [
-    "splash", "onboarding", "login", "biometric", "dashboard", 
+    "splash", "onboarding", "login", "register", "biometric", "dashboard", 
     "doctor-search", "doctor-profile", "booking-confirm",
     "appointments", "telehealth-waiting", "telehealth-call",
     "records", "record-detail", "qr-card", "settings"
@@ -851,6 +851,126 @@ document.addEventListener("DOMContentLoaded", () => {
       toast.style.animation = "fadeIn 0.3s reverse forwards";
       setTimeout(() => toast.remove(), 300);
     }, 3000);
+  }
+
+  // --- Daily Health Monitoring Logic ---
+  window.selectMood = function(element) {
+    const container = element.parentElement;
+    container.querySelectorAll('.mood-btn').forEach(btn => btn.classList.remove('selected'));
+    element.classList.add('selected');
+  };
+
+  window.selectAdherence = function(element) {
+    const container = element.parentElement;
+    container.querySelectorAll('.adherence-btn').forEach(btn => btn.classList.remove('selected'));
+    element.classList.add('selected');
+  };
+
+  function saveDailyReport(platform) {
+    const prefix = platform === 'ios' ? 'ios' : 'and';
+    
+    // Get Symptoms
+    const symptomsContainer = document.getElementById(`${prefix}-symptoms-container`);
+    const selectedSymptoms = Array.from(symptomsContainer.querySelectorAll('.symptom-chip.selected'))
+      .map(el => el.dataset.symptom);
+    
+    if (selectedSymptoms.length === 0) {
+      selectedSymptoms.push("Ninguno");
+    }
+
+    // Get Pain Scale
+    const painSlider = document.getElementById(`${prefix}-pain-slider`);
+    const painScale = parseInt(painSlider.value);
+
+    // Get Vitals
+    const temp = parseFloat(document.getElementById(`${prefix}-vital-temp`).value) || 36.5;
+    const hr = parseInt(document.getElementById(`${prefix}-vital-hr`).value) || 72;
+    const bp = document.getElementById(`${prefix}-vital-bp`).value || "120/80";
+    const oxy = parseInt(document.getElementById(`${prefix}-vital-oxy`).value) || 98;
+    const glucVal = document.getElementById(`${prefix}-vital-gluc`).value;
+    const gluc = glucVal ? parseInt(glucVal) : null;
+    const weight = parseFloat(document.getElementById(`${prefix}-vital-weight`).value) || 78.0;
+
+    // Get Mood
+    const moodContainer = document.getElementById(`${prefix}-mood-container`);
+    const selectedMoodBtn = moodContainer.querySelector('.mood-btn.selected');
+    const mood = selectedMoodBtn ? selectedMoodBtn.dataset.mood : "🙂 Bueno";
+
+    // Get Adherence
+    const adherenceContainer = document.getElementById(`${prefix}-adherence-container`);
+    const selectedAdherenceBtn = adherenceContainer.querySelector('.adherence-btn.selected');
+    const medicationAdherence = selectedAdherenceBtn ? selectedAdherenceBtn.dataset.adherence : "Sí";
+
+    // Get Notes
+    const notes = document.getElementById(`${prefix}-monitoring-notes`).value || "Sin observaciones.";
+
+    // Date and time
+    const today = new Date();
+    const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const formattedTime = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    // Create report object
+    const reportObj = {
+      date: formattedDate,
+      time: formattedTime,
+      symptoms: selectedSymptoms,
+      painScale: painScale,
+      temperature: temp,
+      heartRate: hr,
+      bloodPressure: bp,
+      oxygenSaturation: oxy,
+      bloodGlucose: gluc,
+      weight: weight,
+      mood: mood,
+      medicationAdherence: medicationAdherence,
+      notes: notes,
+      status: "Reportado por el Paciente"
+    };
+
+    // Prepend to array
+    if (!window.HMCDatabase.patientDailyReports) {
+      window.HMCDatabase.patientDailyReports = [];
+    }
+    window.HMCDatabase.patientDailyReports.unshift(reportObj);
+
+    // Save to localStorage
+    localStorage.setItem('patientDailyReports', JSON.stringify(window.HMCDatabase.patientDailyReports));
+
+    // Show Toast Success
+    showToast("📋 Reporte diario de salud guardado con éxito.", "success");
+
+    // Reset inputs
+    painSlider.value = 0;
+    const painLabel = document.getElementById(`${prefix}-pain-label`);
+    if (painLabel) painLabel.textContent = "0 (Sin dolor)";
+    symptomsContainer.querySelectorAll('.symptom-chip').forEach(el => el.classList.remove('selected'));
+    document.getElementById(`${prefix}-monitoring-notes`).value = "";
+
+    // Navigate back to dashboard
+    setTimeout(() => {
+      showScreen("dashboard");
+    }, 1200);
+  }
+
+  // Load daily reports and appointments from localStorage if available
+  const storedReports = localStorage.getItem('patientDailyReports');
+  if (storedReports) {
+    window.HMCDatabase.patientDailyReports = JSON.parse(storedReports);
+  }
+  const storedAppts = localStorage.getItem('appointments');
+  if (storedAppts) {
+    window.HMCDatabase.appointments = JSON.parse(storedAppts);
+  }
+
+  // Bind save buttons
+  const iosSaveBtn = document.getElementById("ios-save-monitoring-btn");
+  if (iosSaveBtn) {
+    iosSaveBtn.addEventListener("click", () => saveDailyReport('ios'));
+  }
+
+  const andSaveBtn = document.getElementById("and-save-monitoring-btn");
+  if (andSaveBtn) {
+    andSaveBtn.addEventListener("click", () => saveDailyReport('and'));
   }
 
   // Kickstart view

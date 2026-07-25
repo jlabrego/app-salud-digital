@@ -272,6 +272,41 @@ const HMCDatabase = {
   ],
 
   // Executive Dashboard / Admin Specific Data
+  patientDailyReports: [
+    {
+      date: "2026-07-23",
+      time: "08:15 AM",
+      symptoms: ["Dolor de cabeza", "Fatiga"],
+      painScale: 3,
+      temperature: 36.8,
+      heartRate: 75,
+      bloodPressure: "125/82",
+      oxygenSaturation: 98,
+      bloodGlucose: 95,
+      weight: 78.2,
+      mood: "🙂 Bueno",
+      medicationAdherence: "Sí",
+      notes: "Sentí un leve dolor de cabeza al despertarme, pero disminuyó después de desayunar.",
+      status: "Reportado por el Paciente"
+    },
+    {
+      date: "2026-07-24",
+      time: "09:00 AM",
+      symptoms: ["Ninguno"],
+      painScale: 0,
+      temperature: 36.5,
+      heartRate: 71,
+      bloodPressure: "120/80",
+      oxygenSaturation: 99,
+      bloodGlucose: 90,
+      weight: 78.0,
+      mood: "😊 Excelente",
+      medicationAdherence: "Sí",
+      notes: "Día tranquilo, sin molestias físicas. Tomé los medicamentos a la hora correspondiente.",
+      status: "Reportado por el Paciente"
+    }
+  ],
+
   adminStats: {
     kpis: {
       occupancy: { value: "84%", trend: "+3.2% vs mes anterior", status: "warning" },

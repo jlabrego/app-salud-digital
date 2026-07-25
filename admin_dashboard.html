@@ -147,6 +147,19 @@
               <div class="kpi-progress-fill" id="kpi-doctors-bar" style="height:100%; width:0%; background-color:var(--secondary-blue); transition:width 1s ease;"></div>
             </div>
           </div>
+          <div class="kpi-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <h4 style="margin:0;">Reportes de Monitoreo</h4>
+              <span class="material-symbols-rounded" style="color:var(--primary); font-size:1.2rem;">edit_note</span>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-val" id="kpi-monitoring-val">0</span>
+              <span class="kpi-trend ok">Recibidos Hoy</span>
+            </div>
+            <div class="kpi-progress-bar-bg" style="height:4px; background-color:var(--bg-gray); border-radius:2px; margin-top:8px; overflow:hidden;">
+              <div class="kpi-progress-fill" id="kpi-monitoring-bar" style="height:100%; width:0%; background-color:var(--primary); transition:width 1s ease;"></div>
+            </div>
+          </div>
         </div>
 
         <!-- Charts and maps split -->
@@ -425,41 +438,75 @@
 
       <!-- 4. APPOINTMENTS VIEW -->
       <div id="admin-view-appointments" class="hidden">
-        <div class="portal-top-bar" style="margin-bottom:var(--space-lg);">
+        <div class="portal-top-bar" style="margin-bottom:var(--space-lg); display:flex; justify-content:space-between; align-items:center;">
           <div>
             <h1 class="portal-page-title" style="font-size:1.8rem; font-weight:800; color:#0F172A; margin-bottom:4px;">Control de Citas Médicas</h1>
-            <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 500;">Consultas programadas para el día de hoy.</p>
+            <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 500;">Administración de la agenda, reprogramación y control de citas HMC.</p>
+          </div>
+          <button class="start-consult-btn ripple-btn" style="background-color:#007A64; color:#FFFFFF; font-weight:700; border-radius:8px; padding:10px 18px; font-size:0.85rem; display:flex; align-items:center; gap:6px; margin:0;" onclick="openNewAppointmentModal()">
+            <span class="material-symbols-rounded" style="font-size:1.2rem;">add</span> Nueva Cita
+          </button>
+        </div>
+
+        <!-- Filter Row -->
+        <div class="portal-panel-card" style="padding:16px 20px; border-radius:16px; margin-bottom:20px; background-color:#FFFFFF; border:1px solid #F1F5F9; box-shadow:0 4px 20px rgba(0,0,0,0.01);">
+          <div style="display:grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap:12px; align-items:center;">
+            <div>
+              <span style="font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; display:block; margin-bottom:6px;">Buscar Paciente</span>
+              <div class="search-input-wrapper" style="position:relative;">
+                <input type="text" id="admin-appt-search" placeholder="Nombre de paciente..." style="width:100%; border:1px solid #E2E8F0; border-radius:10px; padding:10px 12px 10px 36px; font-size:0.85rem; box-sizing:border-box; outline:none;" oninput="filterAdminAppointments()">
+                <span class="material-symbols-rounded" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); font-size:1.2rem; color:#94A3B8;">search</span>
+              </div>
+            </div>
+
+            <div>
+              <span style="font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; display:block; margin-bottom:6px;">Médico Especialista</span>
+              <select id="admin-appt-doctor-filter" style="width:100%; border:1px solid #E2E8F0; border-radius:10px; padding:10px; font-size:0.85rem; background-color:#FFFFFF; outline:none;" onchange="filterAdminAppointments()">
+                <option value="all">Todos los médicos</option>
+                <option value="Dr. Carlos Valladares">Dr. Carlos Valladares</option>
+                <option value="Dra. Sofía Murillo">Dra. Sofía Murillo</option>
+              </select>
+            </div>
+
+            <div>
+              <span style="font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; display:block; margin-bottom:6px;">Especialidad</span>
+              <select id="admin-appt-specialty-filter" style="width:100%; border:1px solid #E2E8F0; border-radius:10px; padding:10px; font-size:0.85rem; background-color:#FFFFFF; outline:none;" onchange="filterAdminAppointments()">
+                <option value="all">Todas las especialidades</option>
+                <option value="Cardiología">Cardiología</option>
+                <option value="Dermatología">Dermatología</option>
+              </select>
+            </div>
+
+            <div>
+              <span style="font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; display:block; margin-bottom:6px;">Estado</span>
+              <select id="admin-appt-status-filter" style="width:100%; border:1px solid #E2E8F0; border-radius:10px; padding:10px; font-size:0.85rem; background-color:#FFFFFF; outline:none;" onchange="filterAdminAppointments()">
+                <option value="all">Todos los estados</option>
+                <option value="Confirmada">Confirmada</option>
+                <option value="Completada">Completada</option>
+                <option value="Cancelada">Cancelada</option>
+              </select>
+            </div>
           </div>
         </div>
+
+        <!-- Appointment queue table -->
         <div class="portal-panel-card" style="padding:0; overflow:hidden; background-color:#FFFFFF; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
           <table class="queue-table" style="width:100%; border-collapse:collapse;">
             <thead style="background-color:#F8FAFC; border-bottom:1px solid #E2E8F0;">
               <tr>
                 <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">ID Cita</th>
-                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Médico Especialista</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Paciente</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Médico</th>
                 <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Especialidad</th>
                 <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Fecha / Hora</th>
-                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Tipo</th>
-                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Consultorio / Sala</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Modalidad</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Consultorio</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Estado</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase; text-align:center;">Acciones</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td style="padding:14px 20px;"><strong>APT-1002</strong></td>
-                <td style="padding:14px 20px; font-weight:700; color:#1E293B;">Dr. Carlos Valladares</td>
-                <td style="padding:14px 20px; font-weight:600; color:#475569;">Cardiología</td>
-                <td style="padding:14px 20px; font-weight:500;">2026-07-28 &bull; 09:30 AM</td>
-                <td style="padding:14px 20px;"><span style="background-color:#EFF6FF; color:#1D4ED8; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Presencial</span></td>
-                <td style="padding:14px 20px; color:#64748B; font-weight:500;">Consultorio 302 - Torre A</td>
-              </tr>
-              <tr>
-                <td style="padding:14px 20px;"><strong>APT-1003</strong></td>
-                <td style="padding:14px 20px; font-weight:700; color:#1E293B;">Dra. Sofía Murillo</td>
-                <td style="padding:14px 20px; font-weight:600; color:#475569;">Dermatología</td>
-                <td style="padding:14px 20px; font-weight:500;">2026-07-31 &bull; 02:00 PM</td>
-                <td style="padding:14px 20px;"><span style="background-color:#ECFDF5; color:#047857; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Telemedicina</span></td>
-                <td style="padding:14px 20px; color:#64748B; font-weight:500;">Sala Virtual EMR</td>
-              </tr>
+            <tbody id="admin-appointments-table-body">
+              <!-- Dynamically populated via js/admin.js -->
             </tbody>
           </table>
         </div>
@@ -709,6 +756,92 @@
         </div>
       </div>
     </main>
+  </div>
+
+  <!-- Modal: Nueva Cita -->
+  <div id="new-appt-modal" style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(15,23,42,0.4); backdrop-filter:blur(8px); display:flex; align-items:center; justify-content:center; z-index:9999;" class="hidden">
+    <div style="background-color:#FFFFFF; border-radius:18px; width:450px; padding:24px; box-shadow:0 10px 30px rgba(0,0,0,0.15); border:1px solid #E2E8F0; position:relative; text-align:left;">
+      <h3 style="margin-top:0; font-size:1.2rem; font-weight:800; color:#0F172A; margin-bottom:18px; display:flex; align-items:center; gap:8px;">
+        <span class="material-symbols-rounded" style="color:var(--primary);">calendar_today</span> Nueva Cita Médica
+      </h3>
+      
+      <div style="display:flex; flex-direction:column; gap:14px; font-family:inherit;">
+        <div>
+          <label style="display:block; font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; margin-bottom:6px;">Paciente</label>
+          <select id="new-appt-patient" style="width:100%; border:1px solid #E2E8F0; border-radius:10px; padding:10px; font-size:0.85rem; outline:none; background-color:#FFFFFF;">
+            <option value="Andrés Mendoza Salgado">Andrés Mendoza Salgado (HMC-98231-AM)</option>
+            <option value="Carmen Elena Zelaya">Carmen Elena Zelaya (HMC-77218-CZ)</option>
+            <option value="Manuel de Jesús Cruz">Manuel de Jesús Cruz (HMC-11029-MC)</option>
+          </select>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label style="display:block; font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; margin-bottom:6px;">Especialidad</label>
+            <select id="new-appt-specialty" style="width:100%; border:1px solid #E2E8F0; border-radius:10px; padding:10px; font-size:0.85rem; outline:none; background-color:#FFFFFF;" onchange="updateDoctorsDropdown()">
+              <option value="Cardiología">Cardiología</option>
+              <option value="Dermatología">Dermatología</option>
+            </select>
+          </div>
+          <div>
+            <label style="display:block; font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; margin-bottom:6px;">Médico</label>
+            <select id="new-appt-doctor" style="width:100%; border:1px solid #E2E8F0; border-radius:10px; padding:10px; font-size:0.85rem; outline:none; background-color:#FFFFFF;">
+              <option value="Dr. Carlos Valladares">Dr. Carlos Valladares</option>
+              <option value="Dra. Sofía Murillo">Dra. Sofía Murillo</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div>
+            <label style="display:block; font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; margin-bottom:6px;">Fecha</label>
+            <input type="date" id="new-appt-date" value="2026-07-28" style="width:100%; border:1px solid #E2E8F0; border-radius:10px; padding:10px; font-size:0.85rem; outline:none; box-sizing:border-box;">
+          </div>
+          <div>
+            <label style="display:block; font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; margin-bottom:6px;">Hora</label>
+            <select id="new-appt-time" style="width:100%; border:1px solid #E2E8F0; border-radius:10px; padding:10px; font-size:0.85rem; outline:none; background-color:#FFFFFF;">
+              <option value="09:00 AM">09:00 AM</option>
+              <option value="09:30 AM">09:30 AM</option>
+              <option value="10:00 AM">10:00 AM</option>
+              <option value="10:30 AM">10:30 AM</option>
+              <option value="02:00 PM">02:00 PM</option>
+              <option value="02:30 PM">02:30 PM</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; margin-bottom:6px;">Modalidad</label>
+          <div style="display:flex; gap:16px; align-items:center; padding:4px 0;">
+            <label style="display:flex; align-items:center; gap:6px; font-size:0.85rem; color:#475569; font-weight:600; cursor:pointer;">
+              <input type="radio" name="new-appt-mode" value="Presencial" checked style="accent-color:var(--primary);"> Presencial
+            </label>
+            <label style="display:flex; align-items:center; gap:6px; font-size:0.85rem; color:#475569; font-weight:600; cursor:pointer;">
+              <input type="radio" name="new-appt-mode" value="Telemedicina" style="accent-color:var(--primary);"> Telemedicina
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; margin-bottom:6px;">Consultorio / Sala</label>
+          <select id="new-appt-room" style="width:100%; border:1px solid #E2E8F0; border-radius:10px; padding:10px; font-size:0.85rem; outline:none; background-color:#FFFFFF;">
+            <option value="Consultorio 302 - Torre A">Consultorio 302 - Torre A</option>
+            <option value="Consultorio 104 - Torre B">Consultorio 104 - Torre B</option>
+            <option value="Sala Virtual EMR">Sala Virtual EMR (Telemedicina)</option>
+          </select>
+        </div>
+
+        <div>
+          <label style="display:block; font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; margin-bottom:6px;">Observaciones</label>
+          <textarea id="new-appt-notes" style="width:100%; height:60px; border:1px solid #E2E8F0; border-radius:10px; padding:10px; font-size:0.85rem; resize:none; outline:none; box-sizing:border-box;" placeholder="Ej. Control de hipertensión trimestral..."></textarea>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+        <button onclick="closeNewAppointmentModal()" style="border:1px solid #E2E8F0; background-color:#FFFFFF; color:#64748B; font-weight:700; font-size:0.85rem; border-radius:8px; padding:10px 16px; cursor:pointer; transition:all 0.2s;">Cancelar</button>
+        <button onclick="saveNewAppointment()" style="border:none; background-color:#007A64; color:#FFFFFF; font-weight:700; font-size:0.85rem; border-radius:8px; padding:10px 18px; cursor:pointer; transition:all 0.2s;">Guardar Cita</button>
+      </div>
+    </div>
   </div>
 
   <!-- Toast Container for modern notifications -->

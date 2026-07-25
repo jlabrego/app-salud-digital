@@ -6,6 +6,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  // Load queue and appointments from localStorage if available
+  const storedQueue = localStorage.getItem('doctorQueue');
+  if (storedQueue) {
+    db.doctorQueue = JSON.parse(storedQueue);
+  }
+  const storedAppts = localStorage.getItem('appointments');
+  if (storedAppts) {
+    db.appointments = JSON.parse(storedAppts);
+  }
+
   // State Variables
   let currentTab = "dashboard";
   let activeConsultPatient = null;
@@ -147,6 +157,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Load Lab and Imaging items inside EMR
     initEMRRecordsList();
+
+    // Render Patient reported daily self-logs
+    renderPatientDailyReports();
 
     // Start Telehealth video
     initEMRTelehealthVideo();
@@ -595,6 +608,89 @@ document.addEventListener("DOMContentLoaded", () => {
     dateDiv.innerText = getFormattedDate();
   }
 
-  // Initial trigger
+  // --- Render Patient Reported Daily Self-logs ---
+  function renderPatientDailyReports() {
+    const listContainer = document.getElementById("emr-patient-reports-list");
+    if (!listContainer) return;
+
+    // Load from localStorage if present
+    const stored = localStorage.getItem('patientDailyReports');
+    if (stored) {
+      db.patientDailyReports = JSON.parse(stored);
+    }
+
+    const reports = db.patientDailyReports || [];
+    if (reports.length === 0) {
+      listContainer.innerHTML = `
+        <div style="padding: 20px; border-radius: 12px; background-color: #F8FAFC; text-align: center; color: #64748B; font-weight: 600; font-size: 0.85rem;">
+          📭 No hay reportes de auto-monitoreo ingresados por el paciente.
+        </div>
+      `;
+      return;
+    }
+
+    listContainer.innerHTML = reports.map(r => {
+      // Determine pain color
+      let painColor = "#2E7D32"; // Green
+      if (r.painScale > 7) painColor = "#E53935"; // Red
+      else if (r.painScale > 3) painColor = "#F59E0B"; // Orange
+
+      // Adherence status badge
+      let adherenceBadge = "";
+      if (r.medicationAdherence === "Sí") {
+        adherenceBadge = `<span style="background-color: #E8F7F3; color: #0A6D5E; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Tomó Medicamento: Sí</span>`;
+      } else if (r.medicationAdherence === "No") {
+        adherenceBadge = `<span style="background-color: #FFEBEE; color: #E53935; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Tomó Medicamento: No</span>`;
+      } else {
+        adherenceBadge = `<span style="background-color: #FFF8E1; color: #E65100; font-size: 0.75rem; font-weight: 700; padding: 2px 8px; border-radius: 4px;">Tomó Medicamento: Parcial</span>`;
+      }
+
+      // Symptoms badges
+      const symptomsHtml = r.symptoms.map(s => {
+        return `<span style="background-color: #F1F5F9; color: #475569; font-size: 0.75rem; font-weight: 600; padding: 2px 6px; border-radius: 4px; border: 1px solid #E2E8F0;">${s}</span>`;
+      }).join(" ");
+
+      return `
+        <div style="background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 12px; padding: 14px; margin-bottom: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.01); text-align: left;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <strong style="font-size: 0.85rem; color: #1F2937;">Reporte - ${r.date} &bull; ${r.time}</strong>
+            <span style="font-size: 0.7rem; color: var(--primary); font-weight: 700; background-color: var(--primary-light); padding: 2px 6px; border-radius: 4px;">Reportado por Paciente</span>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.8rem; color: #475569; margin-bottom: 10px;">
+            <div>🌡️ <strong>Temp:</strong> ${r.temperature}°C</div>
+            <div>💓 <strong>Pulso:</strong> ${r.heartRate} lpm</div>
+            <div>🩸 <strong>Presión:</strong> ${r.bloodPressure}</div>
+            <div>🫁 <strong>SPO2:</strong> ${r.oxygenSaturation}%</div>
+            <div>⚖️ <strong>Peso:</strong> ${r.weight} kg</div>
+            <div>🍬 <strong>Glucosa:</strong> ${r.bloodGlucose ? r.bloodGlucose + ' mg/dL' : 'N/A'}</div>
+          </div>
+
+          <div style="margin-bottom: 8px; font-size: 0.8rem;">
+            <strong>Síntomas:</strong> ${symptomsHtml}
+          </div>
+
+          <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 10px;">
+            <div style="font-size: 0.8rem;">
+              <strong>Dolor:</strong> 
+              <span style="color: ${painColor}; font-weight: 800;">${r.painScale}/10</span>
+            </div>
+            <div style="font-size: 0.8rem;">
+              <strong>Ánimo:</strong> ${r.mood}
+            </div>
+          </div>
+
+          <div style="margin-bottom: 6px;">
+            ${adherenceBadge}
+          </div>
+
+          <div style="font-size: 0.8rem; background-color: #F8FAFC; padding: 8px; border-radius: 8px; border-left: 3px solid var(--primary); color: #475569; font-style: italic; margin-top: 6px;">
+            "${r.notes}"
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
+
   switchTab("dashboard");
 });

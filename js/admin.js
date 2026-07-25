@@ -9,11 +9,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // State Variables
   let currentTab = "overview";
   let realTimeInterval = null;
+  const storedReports = localStorage.getItem('patientDailyReports');
+  const initialReports = storedReports ? JSON.parse(storedReports) : (db.patientDailyReports || []);
   let activeKPIValues = {
     occupancy: 84,
     revenue: 1.84,
     satisfaction: 4.82,
-    doctors: 68
+    doctors: 68,
+    monitoring: initialReports.length
   };
 
   // Shared activity logs for the chronological timeline feed
@@ -79,6 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (tabId === "claims") {
       stopRealTimeUpdates();
       renderClaims();
+    } else if (tabId === "appointments") {
+      stopRealTimeUpdates();
+      renderAdminAppointments();
     } else {
       stopRealTimeUpdates();
     }
@@ -159,6 +165,19 @@ document.addEventListener("DOMContentLoaded", () => {
       countToVal(docVal, parseInt(docVal.innerText) || 0, activeKPIValues.doctors, "");
       const pct = (activeKPIValues.doctors / 80) * 100;
       document.getElementById("kpi-doctors-bar").style.width = `${pct}%`;
+    }
+
+    // Daily Monitoring Reports
+    const monVal = document.getElementById("kpi-monitoring-val");
+    if (monVal) {
+      const stored = localStorage.getItem('patientDailyReports');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        activeKPIValues.monitoring = parsed.length;
+      }
+      countToVal(monVal, parseInt(monVal.innerText) || 0, activeKPIValues.monitoring, "");
+      const pct = Math.min(100, (activeKPIValues.monitoring / 20) * 100);
+      document.getElementById("kpi-monitoring-bar").style.width = `${pct}%`;
     }
   }
 
@@ -649,6 +668,326 @@ document.addEventListener("DOMContentLoaded", () => {
       toast.style.animation = "fadeIn 0.3s reverse forwards";
       setTimeout(() => toast.remove(), 300);
     }, 3000);
+  }
+
+  // --- Admin Appointments System Logic ---
+  let defaultAdminAppts = [
+    { id: "APT-1002", patientName: "Andrés Mendoza Salgado", doctorName: "Dr. Carlos Valladares", specialty: "Cardiología", date: "2026-07-28", time: "09:30 AM", type: "Presencial", room: "Consultorio 302 - Torre A", status: "Confirmada" },
+    { id: "APT-1003", patientName: "Estela Maria Bonilla", doctorName: "Dra. Sofía Murillo", specialty: "Dermatología", date: "2026-07-31", time: "02:00 PM", type: "Telemedicina", room: "Sala Virtual EMR", status: "Confirmada" },
+    { id: "APT-1004", patientName: "Carmen Elena Zelaya", doctorName: "Dr. Carlos Valladares", specialty: "Cardiología", date: "2026-07-24", time: "10:15 AM", type: "Presencial", room: "Consultorio 302 - Torre A", status: "Completada" }
+  ];
+
+  function getAdminAppointments() {
+    const stored = localStorage.getItem('adminAppointments');
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    localStorage.setItem('adminAppointments', JSON.stringify(defaultAdminAppts));
+    return defaultAdminAppts;
+  }
+
+  function saveAdminAppointments(appts) {
+    localStorage.setItem('adminAppointments', JSON.stringify(appts));
+  }
+
+  window.filterAdminAppointments = function() {
+    renderAdminAppointments();
+  };
+
+  window.openNewAppointmentModal = function() {
+    document.getElementById("new-appt-modal").classList.remove("hidden");
+  };
+
+  window.closeNewAppointmentModal = function() {
+    document.getElementById("new-appt-modal").classList.add("hidden");
+  };
+
+  window.updateDoctorsDropdown = function() {
+    const specialty = document.getElementById("new-appt-specialty").value;
+    const docSelect = document.getElementById("new-appt-doctor");
+    const roomSelect = document.getElementById("new-appt-room");
+    docSelect.innerHTML = "";
+    if (specialty === "Cardiología") {
+      docSelect.innerHTML = `<option value="Dr. Carlos Valladares">Dr. Carlos Valladares</option>`;
+      roomSelect.value = "Consultorio 302 - Torre A";
+    } else {
+      docSelect.innerHTML = `<option value="Dra. Sofía Murillo">Dra. Sofía Murillo</option>`;
+      roomSelect.value = "Sala Virtual EMR";
+    }
+  };
+
+  window.saveNewAppointment = function() {
+    const patientName = document.getElementById("new-appt-patient").value;
+    const specialty = document.getElementById("new-appt-specialty").value;
+    const doctorName = document.getElementById("new-appt-doctor").value;
+    const date = document.getElementById("new-appt-date").value;
+    const time = document.getElementById("new-appt-time").value;
+    const mode = document.querySelector('input[name="new-appt-mode"]:checked').value;
+    const room = document.getElementById("new-appt-room").value;
+    const notes = document.getElementById("new-appt-notes").value;
+
+    if (!date) {
+      showToast("⚠️ Por favor selecciona una fecha.", "warning");
+      return;
+    }
+
+    const newAptId = `APT-${Math.floor(1000 + Math.random() * 9000)}`;
+
+    const newAptObj = {
+      id: newAptId,
+      patientName: patientName,
+      doctorName: doctorName,
+      specialty: specialty,
+      date: date,
+      time: time,
+      type: mode,
+      room: room,
+      status: "Confirmada",
+      notes: notes
+    };
+
+    // Save to adminAppointments
+    const appts = getAdminAppointments();
+    appts.unshift(newAptObj);
+    saveAdminAppointments(appts);
+
+    // Sync to Patient mobile app if it's Andrés Mendoza
+    if (patientName === "Andrés Mendoza Salgado") {
+      const storedPatientApts = localStorage.getItem('appointments');
+      const patientApts = storedPatientApts ? JSON.parse(storedPatientApts) : db.appointments;
+      
+      const newPatientApt = {
+        id: newAptId.toLowerCase(),
+        doctorName: doctorName,
+        specialty: specialty,
+        avatar: doctorName.includes("Carlos") ? "doctor_male_profile.png" : "doctor_female_profile.png",
+        date: date,
+        time: time,
+        room: room,
+        type: mode,
+        status: "Confirmada",
+        canCheckIn: true
+      };
+      
+      patientApts.unshift(newPatientApt);
+      localStorage.setItem('appointments', JSON.stringify(patientApts));
+    }
+
+    // Sync to Physician queue if doctor is Dr. Carlos Valladares
+    if (doctorName === "Dr. Carlos Valladares") {
+      const storedQueue = localStorage.getItem('doctorQueue');
+      const queue = storedQueue ? JSON.parse(storedQueue) : db.doctorQueue;
+
+      const queueObj = {
+        id: `q-${Math.floor(100 + Math.random() * 900)}`,
+        patientName: patientName,
+        code: patientName.includes("Andrés") ? "HMC-98231-AM" : patientName.includes("Carmen") ? "HMC-77218-CZ" : "HMC-11029-MC",
+        age: patientName.includes("Andrés") ? 34 : patientName.includes("Carmen") ? 62 : 48,
+        reason: notes || `Consulta de ${specialty}`,
+        status: "Esperando",
+        time: time,
+        telemetryStatus: "vital-ok"
+      };
+
+      queue.push(queueObj);
+      localStorage.setItem('doctorQueue', JSON.stringify(queue));
+    }
+
+    showToast("📅 Cita programada y sincronizada correctamente.", "success");
+    closeNewAppointmentModal();
+    renderAdminAppointments();
+  };
+
+  window.cancelAppointment = function(apptId) {
+    if (!confirm(`¿Estás seguro de que deseas cancelar la cita ${apptId}?`)) return;
+
+    let appts = getAdminAppointments();
+    appts = appts.map(a => {
+      if (a.id === apptId) {
+        a.status = "Cancelada";
+      }
+      return a;
+    });
+    saveAdminAppointments(appts);
+
+    // Sync cancel state to Patient mobile app if applicable
+    const storedPatientApts = localStorage.getItem('appointments');
+    if (storedPatientApts) {
+      let patientApts = JSON.parse(storedPatientApts);
+      patientApts = patientApts.map(pa => {
+        if (pa.id === apptId.toLowerCase()) {
+          pa.status = "Cancelada";
+        }
+        return pa;
+      });
+      localStorage.setItem('appointments', JSON.stringify(patientApts));
+    }
+
+    showToast(`📅 Cita ${apptId} cancelada con éxito.`, "success");
+    renderAdminAppointments();
+  };
+
+  window.reprogramAppointment = function(apptId) {
+    const appts = getAdminAppointments();
+    const appt = appts.find(a => a.id === apptId);
+    if (!appt) return;
+
+    const newDate = prompt("Ingresa la nueva fecha (AAAA-MM-DD):", appt.date);
+    if (!newDate) return;
+    const newTime = prompt("Ingresa la nueva hora (ej. 10:30 AM):", appt.time);
+    if (!newTime) return;
+
+    const updatedAppts = appts.map(a => {
+      if (a.id === apptId) {
+        a.date = newDate;
+        a.time = newTime;
+      }
+      return a;
+    });
+    saveAdminAppointments(updatedAppts);
+
+    // Sync reschedule state to Patient mobile app
+    const storedPatientApts = localStorage.getItem('appointments');
+    if (storedPatientApts) {
+      let patientApts = JSON.parse(storedPatientApts);
+      patientApts = patientApts.map(pa => {
+        if (pa.id === apptId.toLowerCase()) {
+          pa.date = newDate;
+          pa.time = newTime;
+        }
+        return pa;
+      });
+      localStorage.setItem('appointments', JSON.stringify(patientApts));
+    }
+
+    showToast(`📅 Cita ${apptId} reprogramada para el ${newDate} a las ${newTime}.`, "success");
+    renderAdminAppointments();
+  };
+
+  window.changeDoctor = function(apptId) {
+    const appts = getAdminAppointments();
+    const appt = appts.find(a => a.id === apptId);
+    if (!appt) return;
+
+    const newDoc = prompt("Ingresa el nombre del nuevo médico:", appt.doctorName);
+    if (!newDoc) return;
+
+    const updatedAppts = appts.map(a => {
+      if (a.id === apptId) {
+        a.doctorName = newDoc;
+      }
+      return a;
+    });
+    saveAdminAppointments(updatedAppts);
+    showToast(`📅 Médico cambiado a ${newDoc} para la cita ${apptId}.`, "success");
+    renderAdminAppointments();
+  };
+
+  window.changeRoom = function(apptId) {
+    const appts = getAdminAppointments();
+    const appt = appts.find(a => a.id === apptId);
+    if (!appt) return;
+
+    const newRoom = prompt("Ingresa el nuevo consultorio:", appt.room);
+    if (!newRoom) return;
+
+    const updatedAppts = appts.map(a => {
+      if (a.id === apptId) {
+        a.room = newRoom;
+      }
+      return a;
+    });
+    saveAdminAppointments(updatedAppts);
+    showToast(`📅 Consultorio cambiado a ${newRoom} para la cita ${apptId}.`, "success");
+    renderAdminAppointments();
+  };
+
+  function renderAdminAppointments() {
+    const tableBody = document.getElementById("admin-appointments-table-body");
+    if (!tableBody) return;
+
+    const appts = getAdminAppointments();
+
+    const searchQuery = document.getElementById("admin-appt-search").value.toLowerCase();
+    const doctorFilter = document.getElementById("admin-appt-doctor-filter").value;
+    const specialtyFilter = document.getElementById("admin-appt-specialty-filter").value;
+    const statusFilter = document.getElementById("admin-appt-status-filter").value;
+
+    const filtered = appts.filter(a => {
+      const matchSearch = a.patientName.toLowerCase().includes(searchQuery);
+      const matchDoc = doctorFilter === "all" || a.doctorName === doctorFilter;
+      const matchSpec = specialtyFilter === "all" || a.specialty === specialtyFilter;
+      const matchStatus = statusFilter === "all" || a.status === statusFilter;
+      return matchSearch && matchDoc && matchSpec && matchStatus;
+    });
+
+    if (filtered.length === 0) {
+      tableBody.innerHTML = `
+        <tr>
+          <td colspan="9" style="padding:40px; text-align:center; color:#64748B; font-weight:600; font-size:0.9rem;">
+            📭 No se encontraron citas con los filtros seleccionados.
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tableBody.innerHTML = filtered.map(a => {
+      let statusColor = "#E2E8F0";
+      let statusText = "#475569";
+      if (a.status === "Confirmada") {
+        statusColor = "#E8F7F3";
+        statusText = "#0A6D5E";
+      } else if (a.status === "Completada") {
+        statusColor = "#E0F2FE";
+        statusText = "#0369A1";
+      } else if (a.status === "Cancelada") {
+        statusColor = "#FFEBEE";
+        statusText = "#C62828";
+      }
+
+      const typeBadge = a.type === "Telemedicina" 
+        ? `<span style="background-color:#E0F2FE; color:#0369A1; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Telemedicina</span>`
+        : `<span style="background-color:#E8F7F3; color:#0A6D5E; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Presencial</span>`;
+
+      const patientAvatar = a.patientName.includes("Andrés") ? "patient_avatar.png" : a.patientName.includes("Carmen") ? "doctor_female_profile_2.png" : "patient_avatar.png";
+
+      return `
+        <tr style="border-bottom:1px solid #F1F5F9;">
+          <td style="padding:14px 20px;"><strong>${a.id}</strong></td>
+          <td style="padding:14px 20px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <img src="assets/${patientAvatar}" style="width:36px; height:36px; border-radius:50%; border:1px solid #E2E8F0; object-fit:cover;">
+              <span style="font-weight:700; color:#1E293B;">${a.patientName}</span>
+            </div>
+          </td>
+          <td style="padding:14px 20px; font-weight:600; color:#1E293B;">${a.doctorName}</td>
+          <td style="padding:14px 20px; font-weight:600; color:#475569;">${a.specialty}</td>
+          <td style="padding:14px 20px; font-weight:500;">${a.date} &bull; ${a.time}</td>
+          <td style="padding:14px 20px;">${typeBadge}</td>
+          <td style="padding:14px 20px; color:#64748B; font-weight:500;">${a.room}</td>
+          <td style="padding:14px 20px;">
+            <span style="background-color:${statusColor}; color:${statusText}; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">${a.status}</span>
+          </td>
+          <td style="padding:14px 20px; text-align:center;">
+            <div style="display:flex; justify-content:center; gap:6px;">
+              <button class="claim-btn ripple-btn" style="border: 1px solid #E2E8F0; background-color:#F8FAFC; color:#64748B; padding:6px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px;" title="Reprogramar Fecha/Hora" onclick="reprogramAppointment('${a.id}')">
+                <span class="material-symbols-rounded" style="font-size:1.15rem;">edit_calendar</span>
+              </button>
+              <button class="claim-btn ripple-btn" style="border: 1px solid #E2E8F0; background-color:#F8FAFC; color:#64748B; padding:6px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px;" title="Cambiar Médico" onclick="changeDoctor('${a.id}')">
+                <span class="material-symbols-rounded" style="font-size:1.15rem;">supervisor_account</span>
+              </button>
+              <button class="claim-btn ripple-btn" style="border: 1px solid #E2E8F0; background-color:#F8FAFC; color:#64748B; padding:6px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px;" title="Cambiar Consultorio" onclick="changeRoom('${a.id}')">
+                <span class="material-symbols-rounded" style="font-size:1.15rem;">room</span>
+              </button>
+              <button class="claim-btn ripple-btn" style="border: 1px solid #FFEBEE; background-color:#FFEBEE; color:#C62828; padding:6px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px;" title="Cancelar Cita" onclick="cancelAppointment('${a.id}')" ${a.status === 'Cancelada' ? 'disabled style="opacity:0.4; cursor:not-allowed;"' : ''}>
+                <span class="material-symbols-rounded" style="font-size:1.15rem;">cancel</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join("");
   }
 
   // Initial tab loading
