@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // State Variables
+  let isLoggedIn = false;
   let currentTab = "overview";
   let realTimeInterval = null;
   const storedReports = localStorage.getItem('patientDailyReports');
@@ -100,6 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- Real-time updates synchronization loop ---
   function startRealTimeUpdates() {
+    if (!isLoggedIn) return;
     if (realTimeInterval) clearInterval(realTimeInterval);
     
     updateSyncTime();
@@ -388,8 +390,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!container) return;
 
     container.innerHTML = "";
-    // Grab first 5 items
-    const recent = db.adminStats.billingClaims.slice(0, 5);
+    // Grab first 3 items (changed from 5 to fit layout without scrolling)
+    const recent = db.adminStats.billingClaims.slice(0, 3);
 
     recent.forEach(claim => {
       const card = document.createElement("div");
@@ -989,6 +991,37 @@ document.addEventListener("DOMContentLoaded", () => {
       `;
     }).join("");
   }
+
+  window.loginAdmin = function() {
+    const email = document.getElementById("admin-login-email").value;
+    if (!email) {
+      showToast("⚠️ Por favor ingresa tu correo electrónico.", "warning");
+      return;
+    }
+    
+    isLoggedIn = true;
+    
+    // Hide login, show main container
+    document.getElementById("admin-login-view").classList.add("hidden");
+    document.getElementById("admin-main-container").classList.remove("hidden");
+    
+    // Trigger real-time updates and metrics counter animation
+    startRealTimeUpdates();
+    animateKPIValues();
+    
+    showToast("🟢 Sesión iniciada con éxito. ¡Bienvenido, Administrador!", "success");
+  };
+
+  window.logoutAdmin = function() {
+    isLoggedIn = false;
+    stopRealTimeUpdates();
+    
+    // Hide main, show login
+    document.getElementById("admin-main-container").classList.add("hidden");
+    document.getElementById("admin-login-view").classList.remove("hidden");
+    
+    showToast("🔑 Sesión cerrada correctamente.", "success");
+  };
 
   // Initial tab loading
   switchTab("overview");

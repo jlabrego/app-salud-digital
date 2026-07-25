@@ -692,5 +692,27 @@ document.addEventListener("DOMContentLoaded", () => {
     }).join("");
   }
 
+  window.loginPhysician = function() {
+    const email = document.getElementById("physician-login-email").value;
+    if (!email) {
+      showToast("⚠️ Por favor ingresa tu usuario clínico.", "warning");
+      return;
+    }
+    
+    // Hide login, show main
+    document.getElementById("physician-login-view").classList.add("hidden");
+    document.getElementById("physician-main-container").classList.remove("hidden");
+    
+    showToast("🟢 Sesión iniciada. ¡Bienvenido, Dr. Carlos Valladares!", "success");
+  };
+
+  window.logoutPhysician = function() {
+    // Hide main, show login
+    document.getElementById("physician-main-container").classList.add("hidden");
+    document.getElementById("physician-login-view").classList.remove("hidden");
+    
+    showToast("🔑 Sesión cerrada correctamente.", "success");
+  };
+
   switchTab("dashboard");
 });

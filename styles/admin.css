@@ -642,5 +642,69 @@
   outline: none;
 }
 
+/* Presentation Mode overrides for HMC Connect Admin Dashboard */
+@media (min-width: 1200px) {
+  .admin-content {
+    padding: var(--space-md) var(--space-lg) !important;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .portal-top-bar {
+    margin-bottom: var(--space-md) !important;
+  }
+
+  .kpi-row {
+    margin-bottom: var(--space-md) !important;
+    gap: var(--space-sm) !important;
+  }
+
+  .kpi-card {
+    padding: var(--space-sm) var(--space-md) !important;
+  }
+
+  .kpi-val {
+    font-size: 1.6rem !important;
+  }
+
+  .chart-card-viewport {
+    height: 170px !important;
+    padding: var(--space-sm) !important;
+  }
+
+  .portal-dashboard-grid {
+    gap: var(--space-md) !important;
+  }
+
+  .recent-claim-card {
+    padding: 8px 12px !important;
+  }
+
+  .timeline-item {
+    padding-bottom: 2px !important;
+  }
+  
+  .timeline-line {
+    top: 14px !important;
+    bottom: -18px !important;
+  }
+
+  /* Limit tables heights inside main sections so they fit exactly */
+  #admin-view-appointments .portal-panel-card,
+  #admin-view-patients .portal-panel-card,
+  #admin-view-consults .portal-panel-card,
+  #admin-view-billing .portal-panel-card,
+  #admin-view-users .portal-panel-card {
+    max-height: calc(100vh - 190px);
+    overflow-y: auto;
+  }
+
+  /* Claims module customization to fit 1080px */
+  #admin-view-claims .portal-panel-card {
+    max-height: calc(100vh - 250px);
+    overflow-y: auto;
+  }
+}
+
 
 

@@ -647,3 +647,84 @@
   font-size: 1.35rem;
 }
 
+/* Presentation Mode overrides for HMC Connect Physician Portal */
+@media (min-width: 1200px) {
+  .portal-content {
+    padding: var(--space-md) var(--space-lg) !important;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .portal-top-bar {
+    margin-bottom: var(--space-md) !important;
+  }
+
+  .portal-metrics-row {
+    margin-bottom: var(--space-md) !important;
+    gap: var(--space-sm) !important;
+  }
+
+  .portal-metric-card {
+    padding: var(--space-sm) var(--space-md) !important;
+  }
+
+  .portal-metric-val {
+    font-size: 1.6rem !important;
+  }
+
+  .portal-dashboard-grid {
+    gap: var(--space-md) !important;
+  }
+
+  .portal-panel-card {
+    padding: var(--space-md) var(--space-lg) !important;
+    border-radius: var(--radius-md) !important;
+  }
+
+  /* Agenda list compact style */
+  .agenda-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px !important;
+  }
+
+  .agenda-item {
+    padding: 6px 10px !important;
+  }
+
+  /* Consultation room EMR layout */
+  .emr-patient-header {
+    margin-bottom: var(--space-md) !important;
+    padding: var(--space-sm) var(--space-md) !important;
+  }
+
+  .emr-patient-summary-card {
+    margin-bottom: var(--space-md) !important;
+    padding: var(--space-sm) !important;
+  }
+
+  .emr-notes-textarea {
+    height: 155px !important; /* Scaled down to prevent scrolling */
+  }
+
+  .emr-telehealth-video {
+    height: 150px !important; /* Scaled down to prevent scrolling */
+    margin-bottom: var(--space-sm) !important;
+  }
+
+  .emr-chart-viewport {
+    height: 150px !important;
+  }
+
+  /* Keep tabs bar tidy */
+  .emr-tabs-bar {
+    margin-bottom: var(--space-sm) !important;
+  }
+
+  /* EMR Prescription Builder compact */
+  .prescription-meds-list {
+    max-height: 100px !important;
+    overflow-y: auto;
+  }
+}
+
