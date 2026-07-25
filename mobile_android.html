@@ -24,9 +24,15 @@
     <!-- 1. SPLASH SCREEN -->
     <div class="screen splash-screen" id="screen-splash">
       <div class="splash-logo-container">
-        <span class="material-symbols-rounded" style="font-size: 4rem; color: #FFFFFF;">favorite</span>
+        <div class="splash-logo-ring" style="border-radius: 20px;">
+          <svg viewBox="0 0 40 40" style="width: 48px; height: 48px;" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="15" y="4" width="10" height="32" rx="4" fill="#FFFFFF" />
+            <rect x="4" y="15" width="32" height="10" rx="4" fill="#FFFFFF" />
+            <circle cx="20" cy="20" r="8" fill="#42A5F5" />
+          </svg>
+        </div>
         <h1 class="splash-title" style="font-family: var(--font-roboto);">HMC Connect</h1>
-        <p style="opacity: 0.85; font-size: 0.88rem; font-family: var(--font-roboto);">Honduras Medical Center</p>
+        <p style="opacity: 0.85; font-size: 0.88rem; font-family: var(--font-roboto); font-weight:500; letter-spacing: 0.5px;">HONDURAS MEDICAL CENTER</p>
       </div>
     </div>
 
@@ -50,9 +56,15 @@
     <!-- 3. LOGIN SCREEN -->
     <div class="screen hidden" id="screen-login" style="padding-top: var(--space-xl);">
       <div class="login-header-box fade-in">
-        <span class="material-symbols-rounded" style="font-size: 3rem; color: var(--primary-blue)">favorite</span>
-        <h2 class="onboarding-title" style="margin-top: var(--space-sm); font-family: var(--font-roboto);">HMC Connect</h2>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Bienvenido de vuelta. Inicia sesión.</p>
+        <div class="logo-box" style="border-radius: 16px;">
+          <svg viewBox="0 0 40 40" style="width: 38px; height: 38px;" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="15" y="4" width="10" height="32" rx="4" fill="#1976D2" />
+            <rect x="4" y="15" width="32" height="10" rx="4" fill="#1976D2" />
+            <circle cx="20" cy="20" r="8" fill="#42A5F5" />
+          </svg>
+        </div>
+        <h2 class="onboarding-title" style="margin-top: var(--space-xs); font-family: var(--font-roboto); font-size: 1.6rem;">HMC Connect</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">Bienvenido de vuelta. Inicia sesión.</p>
       </div>
 
       <div class="login-input-group slide-up">
@@ -89,12 +101,19 @@
 
     <!-- 5. PATIENT DASHBOARD / HOME -->
     <div class="screen hidden" id="screen-dashboard">
-      <div class="dashboard-greeting-row" style="margin-top: 12px;">
+      <div class="dashboard-greeting-row" style="margin-top: 16px;">
         <div>
-          <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Hola Andrés,</p>
-          <h2 style="font-size: 1.45rem; font-weight: 700;">¡Buenos días!</h2>
+          <div class="ios-header-logo" style="margin-bottom: 2px; font-family: var(--font-roboto);">
+            <svg viewBox="0 0 40 40" style="width: 22px; height: 22px;" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="15" y="4" width="10" height="32" rx="4" fill="#1976D2" />
+              <rect x="4" y="15" width="32" height="10" rx="4" fill="#1976D2" />
+              <circle cx="20" cy="20" r="8" fill="#42A5F5" />
+            </svg>
+            HMC Connect
+          </div>
+          <h2 style="font-size: 1.45rem; font-weight: 700;">¡Buenos días Andrés!</h2>
         </div>
-        <img src="https://via.placeholder.com/150" class="dashboard-avatar" id="patient-avatar" alt="Avatar">
+        <img src="assets/patient_avatar.png" class="dashboard-avatar" id="patient-avatar" alt="Avatar">
       </div>
 
       <div class="md3-card-filled slide-up">
@@ -105,7 +124,7 @@
       </div>
 
       <!-- Upcoming Appointment Banner -->
-      <div class="md3-card-outlined slide-up" style="background-color: var(--primary-blue); color: #FFFFFF;">
+      <div class="md3-card-outlined slide-up" style="background-color: var(--primary-blue); color: #FFFFFF; border:none; box-shadow:var(--shadow-premium);">
         <div class="dashboard-apt-header">
           <img src="assets/doctor_male_profile.png" class="dashboard-apt-doc-img" alt="Dr. Valladares">
           <div class="dashboard-apt-meta">
@@ -227,7 +246,7 @@
       </div>
 
       <div class="profile-doctor-hero">
-        <img id="profile-doc-avatar" src="https://via.placeholder.com/150" alt="Doctor" style="border-radius: 28px;">
+        <img id="profile-doc-avatar" src="assets/doctor_male_profile.png" alt="Doctor" style="border-radius: 28px;">
         <h3 id="profile-doc-name" style="font-size: 1.3rem; font-weight:700;">Dr. Carlos Valladares</h3>
         <span id="profile-doc-specialty" style="color:var(--primary-blue); font-weight:600; font-size:0.95rem;">Cardiólogo</span>
         <br>
@@ -337,7 +356,7 @@
           <span class="label">Espera</span>
         </div>
         
-        <img id="waiting-doctor-avatar" src="https://via.placeholder.com/150" class="doctor-avatar" style="width: 80px; height:80px; border-radius: 24px; margin: 0 auto 16px;" alt="Doctor">
+        <img id="waiting-doctor-avatar" src="assets/doctor_male_profile.png" class="doctor-avatar" style="width: 80px; height:80px; border-radius: 24px; margin: 0 auto 16px;" alt="Doctor">
         <h3 id="waiting-doctor-name" style="font-size: 1.25rem; font-weight:700;">Dr. Carlos Valladares</h3>
         <span id="waiting-doctor-specialty" style="color:var(--primary-blue); font-weight:600;">Cardiología</span>
         
@@ -568,7 +587,6 @@
   <script>
     // Custom Android FAB listener
     document.addEventListener("DOMContentLoaded", () => {
-      // Toggle FAB visibility based on screen routing
       const fab = document.getElementById("android-fab-book");
       const observer = new MutationObserver(() => {
         const activeScreen = document.querySelector(".screen.active");

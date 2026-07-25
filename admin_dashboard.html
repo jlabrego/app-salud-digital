@@ -12,24 +12,68 @@
     <!-- Sidebar Navigation -->
     <aside class="admin-sidebar">
       <div class="admin-brand">
-        <span class="material-symbols-rounded">favorite</span>
-        HMC Connect Admin
+        <svg class="admin-brand-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="15" y="4" width="10" height="32" rx="4" fill="#007A64" />
+          <rect x="4" y="15" width="32" height="10" rx="4" fill="#007A64" />
+          <circle cx="20" cy="20" r="8" fill="#38BDF8" />
+        </svg>
+        HMC Connect
       </div>
 
       <nav class="admin-nav-list">
         <button class="admin-nav-item active" data-tab="overview">
-          <span class="material-symbols-rounded">bar_chart</span>
-          Resumen Ejecutivo
+          <span class="material-symbols-rounded">home</span>
+          Dashboard
+        </button>
+        <button class="admin-nav-item" data-tab="patients">
+          <span class="material-symbols-rounded">group</span>
+          Pacientes
+        </button>
+        <button class="admin-nav-item" data-tab="appointments">
+          <span class="material-symbols-rounded">calendar_today</span>
+          Citas
+        </button>
+        <button class="admin-nav-item" data-tab="consults">
+          <span class="material-symbols-rounded">forum</span>
+          Consultas
+        </button>
+        <button class="admin-nav-item" data-tab="billing">
+          <span class="material-symbols-rounded">receipt_long</span>
+          Facturación
         </button>
         <button class="admin-nav-item" data-tab="claims">
-          <span class="material-symbols-rounded">payments</span>
+          <span class="material-symbols-rounded">verified_user</span>
           Reclamaciones y Seguros
         </button>
-        <button class="admin-nav-item" style="margin-top: auto; color: #EF4444;">
-          <span class="material-symbols-rounded">logout</span>
-          Cerrar Sesión
+        <button class="admin-nav-item" data-tab="reports">
+          <span class="material-symbols-rounded">assessment</span>
+          Reportes
+        </button>
+        <button class="admin-nav-item" data-tab="users">
+          <span class="material-symbols-rounded">manage_accounts</span>
+          Usuarios
+        </button>
+        <button class="admin-nav-item" data-tab="settings">
+          <span class="material-symbols-rounded">settings</span>
+          Configuración
         </button>
       </nav>
+
+      <!-- Sidebar User Profile Card -->
+      <div class="sidebar-profile-card" onclick="showToast('👤 Perfil de administrador: Jessica Abrego', 'success')">
+        <img class="sidebar-profile-avatar" src="assets/patient_avatar.png" alt="Jessica Abrego">
+        <div class="sidebar-profile-info">
+          <span class="sidebar-profile-name">Jessica Abrego</span>
+          <span class="sidebar-profile-role">Administradora</span>
+        </div>
+        <span class="material-symbols-rounded" style="font-size:1.2rem; color:#64748B;">expand_more</span>
+      </div>
+
+      <!-- Cerrar sesión -->
+      <button class="admin-nav-item" style="color: #EF4444;" onclick="window.location.href='index.html'">
+        <span class="material-symbols-rounded" style="color:#EF4444;">logout</span>
+        Cerrar sesión
+      </button>
     </aside>
 
     <!-- Main Content Panel -->
@@ -39,39 +83,68 @@
         <div class="portal-top-bar">
           <div>
             <h1 class="portal-page-title">Hospital Analytics Dashboard</h1>
-            <p style="color:var(--text-muted); font-size:0.9rem;">Honduras Medical Center &bull; Tegucigalpa HQ</p>
+            <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 500; display:flex; align-items:center; gap:6px;">
+              Honduras Medical Center &bull; Tegucigalpa HQ &bull; 
+              <span class="pulse-icon"></span> 
+              <span style="color:var(--success-green); font-weight:700;">Datos sincronizados</span> &bull; 
+              <span style="color:var(--text-muted);">Sinc: <span id="sync-time">09:41:00</span></span>
+            </p>
           </div>
-          <div style="font-weight:700; color:var(--primary-blue);">24 de Julio, 2026</div>
+          <div id="overview-date" style="font-weight:700; color:var(--primary-blue);">24 de Julio, 2026</div>
         </div>
 
         <!-- KPI Ticker Metrics -->
         <div class="kpi-row slide-up">
           <div class="kpi-card">
-            <h4>Ocupación Hospitalaria</h4>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <h4 style="margin:0;">Ocupación Hospitalaria</h4>
+              <span class="material-symbols-rounded" style="color:var(--primary-blue); font-size:1.2rem;">bed</span>
+            </div>
             <div class="kpi-value-row">
-              <span class="kpi-val" id="kpi-occupancy-val">84%</span>
+              <span class="kpi-val" id="kpi-occupancy-val">0</span><span class="kpi-val"></span>
               <span class="kpi-trend warning">+3.2% vs mes ant.</span>
             </div>
+            <div class="kpi-progress-bar-bg" style="height:4px; background-color:var(--bg-gray); border-radius:2px; margin-top:8px; overflow:hidden;">
+              <div class="kpi-progress-fill" id="kpi-occupancy-bar" style="height:100%; width:0%; background-color:var(--primary-blue); transition:width 1s ease;"></div>
+            </div>
           </div>
           <div class="kpi-card">
-            <h4>Ingresos Diarios</h4>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <h4 style="margin:0;">Ingresos Diarios</h4>
+              <span class="material-symbols-rounded" style="color:var(--success-green); font-size:1.2rem;">payments</span>
+            </div>
             <div class="kpi-value-row">
-              <span class="kpi-val" id="kpi-revenue-val">L. 1.84M</span>
+              <span class="kpi-val" style="font-size: 1.4rem;">L.</span> <span class="kpi-val" id="kpi-revenue-val">0.00</span><span class="kpi-val" style="font-size: 1.4rem;">M</span>
               <span class="kpi-trend ok">+14.8% vs meta</span>
             </div>
-          </div>
-          <div class="kpi-card">
-            <h4>Satisfacción Paciente</h4>
-            <div class="kpi-value-row">
-              <span class="kpi-val" id="kpi-satisfaction-val">4.82/5.0</span>
-              <span class="kpi-trend ok">+0.12 pts</span>
+            <div class="kpi-progress-bar-bg" style="height:4px; background-color:var(--bg-gray); border-radius:2px; margin-top:8px; overflow:hidden;">
+              <div class="kpi-progress-fill" id="kpi-revenue-bar" style="height:100%; width:0%; background-color:var(--success-green); transition:width 1s ease;"></div>
             </div>
           </div>
           <div class="kpi-card">
-            <h4>Médicos Activos</h4>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <h4 style="margin:0;">Satisfacción Paciente</h4>
+              <span class="material-symbols-rounded" style="color:var(--warning-orange); font-size:1.2rem;">mood</span>
+            </div>
             <div class="kpi-value-row">
-              <span class="kpi-val" id="kpi-doctors-val">68</span>
+              <span class="kpi-val" id="kpi-satisfaction-val">0.00</span><span class="kpi-val" style="font-size:1.2rem; color:var(--text-muted);">/5.0</span>
+              <span class="kpi-trend ok">+0.12 pts</span>
+            </div>
+            <div class="kpi-progress-bar-bg" style="height:4px; background-color:var(--bg-gray); border-radius:2px; margin-top:8px; overflow:hidden;">
+              <div class="kpi-progress-fill" id="kpi-satisfaction-bar" style="height:100%; width:0%; background-color:var(--warning-orange); transition:width 1s ease;"></div>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <h4 style="margin:0;">Médicos Activos</h4>
+              <span class="material-symbols-rounded" style="color:var(--secondary-blue); font-size:1.2rem;">badge</span>
+            </div>
+            <div class="kpi-value-row">
+              <span class="kpi-val" id="kpi-doctors-val">0</span>
               <span class="kpi-trend ok">En Turno</span>
+            </div>
+            <div class="kpi-progress-bar-bg" style="height:4px; background-color:var(--bg-gray); border-radius:2px; margin-top:8px; overflow:hidden;">
+              <div class="kpi-progress-fill" id="kpi-doctors-bar" style="height:100%; width:0%; background-color:var(--secondary-blue); transition:width 1s ease;"></div>
             </div>
           </div>
         </div>
@@ -98,44 +171,548 @@
             </div>
           </div>
         </div>
+
+        <!-- Lower Dashboard Section: Recent Claims & Activity timeline -->
+        <div class="portal-dashboard-grid slide-up" style="animation-delay: 0.15s; margin-top: var(--space-lg); grid-template-columns: 2fr 1fr;">
+          <!-- Left: Recent Claims Cards -->
+          <div class="portal-panel-card">
+            <div class="portal-panel-header" style="margin-bottom: var(--space-md);">
+              <h3 class="portal-panel-title">Reclamaciones Recientes</h3>
+              <button class="claim-btn approve ripple-btn" id="btn-view-all-claims" style="font-size:0.8rem; background-color:var(--light-blue); color:var(--primary-blue); font-weight:700; border-radius:8px;">Ver todas las reclamaciones</button>
+            </div>
+            
+            <div id="recent-claims-container" style="display:flex; flex-direction:column; gap:10px;">
+              <!-- populated dynamically (max 5 items) -->
+            </div>
+          </div>
+
+          <!-- Right: Recent Activity Timeline -->
+          <div class="portal-panel-card">
+            <h3 class="portal-panel-title" style="margin-bottom:var(--space-md);">Actividad Reciente</h3>
+            <div class="timeline-container" id="recent-activity-container">
+              <!-- populated dynamically -->
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- 2. BILLING & CLAIMS LIST VIEW -->
       <div id="admin-view-claims" class="hidden">
-        <div class="portal-top-bar">
+        <!-- Header Top Bar -->
+        <div class="portal-top-bar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:var(--space-lg);">
           <div>
-            <h1 class="portal-page-title">Gestión de Reclamaciones de Seguros</h1>
-            <p style="color:var(--text-muted); font-size:0.9rem;">Facturación unificada y aprobación de coberturas médicas.</p>
+            <h1 class="portal-page-title" style="font-size:1.8rem; font-weight:800; color:#0F172A; margin-bottom:4px;">Gestión de Reclamaciones de Seguros</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 500;">Facturación unificada y aprobación de coberturas médicas.</p>
+          </div>
+          <div style="display:flex; align-items:center; gap:16px;">
+            <!-- Notifications Bell -->
+            <div style="position:relative; cursor:pointer;" onclick="showToast('🔔 Tienes 3 notificaciones administrativas sin revisar.', 'warning')">
+              <span class="material-symbols-rounded" style="font-size:1.6rem; color:#64748B;">notifications</span>
+              <span style="position:absolute; top:-2px; right:-2px; background-color:var(--danger-red); color:#FFFFFF; font-size:0.65rem; font-weight:800; border-radius:50%; width:14px; height:14px; display:flex; align-items:center; justify-content:center;">3</span>
+            </div>
+            <!-- Nuevo Reclamo Button (Teal HMC Style) -->
+            <button class="start-consult-btn ripple-btn" style="background-color: #007A64; color: #FFFFFF; font-weight:700; border-radius:8px; display:flex; align-items:center; gap:6px; padding:10px 18px; font-size:0.9rem; box-shadow:0 4px 10px rgba(0,122,100,0.15);" onclick="showToast('📝 Creación de nuevo reclamo (Simulado)', 'success')">
+              <span class="material-symbols-rounded">add</span> Nuevo Reclamo
+            </button>
           </div>
         </div>
 
-        <!-- Claims Queue table -->
-        <div class="portal-panel-card slide-up">
-          <div class="portal-panel-header">
-            <h3 class="portal-panel-title">Reclamaciones Médicas Recientes</h3>
+        <!-- Four Statistic KPI Cards Row -->
+        <div class="kpi-row slide-up" style="display:grid; grid-template-columns: repeat(4, 1fr); gap:var(--space-md); margin-bottom:var(--space-lg);">
+          <!-- Total Reclamos -->
+          <div class="kpi-card" style="display:flex; align-items:center; gap:16px; background-color:#FFFFFF; border-radius:16px; padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+            <div style="width:48px; height:48px; border-radius:50%; background-color:#E0F2FE; display:flex; align-items:center; justify-content:center; color:#0284C7; flex-shrink:0;">
+              <span class="material-symbols-rounded" style="font-size:1.5rem;">description</span>
+            </div>
+            <div style="flex-grow:1;">
+              <span style="font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.3px;">Total Reclamos</span>
+              <div style="font-size:1.8rem; font-weight:800; color:#1E293B; line-height:1.2; margin-top:2px;">128</div>
+              <div style="display:flex; align-items:center; gap:4px; margin-top:4px; font-size:0.75rem; color:#64748B; font-weight:600;">
+                <span style="color:#10B981; font-weight:700; display:flex; align-items:center;"><span class="material-symbols-rounded" style="font-size:0.95rem;">arrow_upward</span>12%</span>
+                <span>Este mes</span>
+              </div>
+            </div>
           </div>
+          <!-- Pendientes -->
+          <div class="kpi-card" style="display:flex; align-items:center; gap:16px; background-color:#FFFFFF; border-radius:16px; padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+            <div style="width:48px; height:48px; border-radius:50%; background-color:#FEF3C7; display:flex; align-items:center; justify-content:center; color:#D97706; flex-shrink:0;">
+              <span class="material-symbols-rounded" style="font-size:1.5rem;">schedule</span>
+            </div>
+            <div style="flex-grow:1;">
+              <span style="font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.3px;">Pendientes</span>
+              <div style="font-size:1.8rem; font-weight:800; color:#1E293B; line-height:1.2; margin-top:2px;">42</div>
+              <div style="display:flex; align-items:center; gap:4px; margin-top:4px; font-size:0.75rem; color:#64748B; font-weight:600;">
+                <span style="color:#D97706; font-weight:700;">Por aprobar</span>
+              </div>
+            </div>
+          </div>
+          <!-- Aprobados -->
+          <div class="kpi-card" style="display:flex; align-items:center; gap:16px; background-color:#FFFFFF; border-radius:16px; padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+            <div style="width:48px; height:48px; border-radius:50%; background-color:#D1FAE5; display:flex; align-items:center; justify-content:center; color:#059669; flex-shrink:0;">
+              <span class="material-symbols-rounded" style="font-size:1.5rem;">check_circle</span>
+            </div>
+            <div style="flex-grow:1;">
+              <span style="font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.3px;">Aprobados</span>
+              <div style="font-size:1.8rem; font-weight:800; color:#1E293B; line-height:1.2; margin-top:2px;">65</div>
+              <div style="display:flex; align-items:center; gap:4px; margin-top:4px; font-size:0.75rem; color:#64748B; font-weight:600;">
+                <span style="color:#10B981; font-weight:700; display:flex; align-items:center;"><span class="material-symbols-rounded" style="font-size:0.95rem;">arrow_upward</span>8%</span>
+                <span>Este mes</span>
+              </div>
+            </div>
+          </div>
+          <!-- Rechazados -->
+          <div class="kpi-card" style="display:flex; align-items:center; gap:16px; background-color:#FFFFFF; border-radius:16px; padding:20px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+            <div style="width:48px; height:48px; border-radius:50%; background-color:#FEE2E2; display:flex; align-items:center; justify-content:center; color:#DC2626; flex-shrink:0;">
+              <span class="material-symbols-rounded" style="font-size:1.5rem;">cancel</span>
+            </div>
+            <div style="flex-grow:1;">
+              <span style="font-size:0.75rem; font-weight:700; color:#64748B; text-transform:uppercase; letter-spacing:0.3px;">Rechazados</span>
+              <div style="font-size:1.8rem; font-weight:800; color:#1E293B; line-height:1.2; margin-top:2px;">21</div>
+              <div style="display:flex; align-items:center; gap:4px; margin-top:4px; font-size:0.75rem; color:#64748B; font-weight:600;">
+                <span style="color:#EF4444; font-weight:700; display:flex; align-items:center;"><span class="material-symbols-rounded" style="font-size:0.95rem;">arrow_downward</span>5%</span>
+                <span>Este mes</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-          <table class="queue-table">
-            <thead>
+        <!-- Professional Filter Toolbar Row -->
+        <div class="portal-panel-card slide-up" style="margin-bottom:var(--space-md); padding:16px; background-color:#FFFFFF; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+            <!-- Search input -->
+            <div style="flex-grow:2; min-width:240px; position:relative;">
+              <span class="material-symbols-rounded" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94A3B8; font-size:1.2rem;">search</span>
+              <input type="text" id="claims-search-input" placeholder="Buscar por ID, paciente o aseguradora..." style="width:100%; padding:10px 12px 10px 40px; border-radius:10px; border:1px solid #E2E8F0; background-color:#F8FAFC; font-size:0.88rem; font-weight:500; color:#1E293B; outline:none; transition:border-color 0.2s;" onfocus="this.style.borderColor='#007A64'" onblur="this.style.borderColor='#E2E8F0'">
+            </div>
+            
+            <!-- Estado dropdown -->
+            <div style="flex-grow:1; min-width:120px; display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.72rem; font-weight:800; color:#64748B; text-transform:uppercase;">Estado</label>
+              <select id="filter-status" style="width:100%; padding:9px 12px; border-radius:10px; border:1px solid #E2E8F0; background-color:#F8FAFC; font-size:0.85rem; font-weight:600; color:#1E293B; cursor:pointer;">
+                <option value="all">Todos</option>
+                <option value="Pendiente">Pendiente</option>
+                <option value="Aprobada">Aprobada</option>
+                <option value="Rechazada">Rechazada</option>
+              </select>
+            </div>
+
+            <!-- Departamento dropdown -->
+            <div style="flex-grow:1; min-width:140px; display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.72rem; font-weight:800; color:#64748B; text-transform:uppercase;">Departamento</label>
+              <select id="filter-dept" style="width:100%; padding:9px 12px; border-radius:10px; border:1px solid #E2E8F0; background-color:#F8FAFC; font-size:0.85rem; font-weight:600; color:#1E293B; cursor:pointer;">
+                <option value="all">Todos</option>
+                <option value="Cardiología">Cardiología</option>
+                <option value="Ginecología">Ginecología</option>
+                <option value="Traumatología">Traumatología</option>
+                <option value="Urgencias">Urgencias</option>
+              </select>
+            </div>
+
+            <!-- Fecha dropdown -->
+            <div style="flex-grow:1; min-width:140px; display:flex; flex-direction:column; gap:4px;">
+              <label style="font-size:0.72rem; font-weight:800; color:#64748B; text-transform:uppercase;">Fecha</label>
+              <select id="filter-date" style="width:100%; padding:9px 12px; border-radius:10px; border:1px solid #E2E8F0; background-color:#F8FAFC; font-size:0.85rem; font-weight:600; color:#1E293B; cursor:pointer;">
+                <option value="all">Seleccionar fecha</option>
+                <option value="today">Hoy</option>
+                <option value="yesterday">Ayer o antes</option>
+              </select>
+            </div>
+
+            <!-- Export simulated action -->
+            <button class="start-consult-btn ripple-btn" style="background-color:#FFFFFF; border:1px solid #E2E8F0; color:#007A64; font-weight:700; border-radius:10px; padding:10px 18px; font-size:0.85rem; display:flex; align-items:center; gap:6px; margin-top:20px;" onclick="showToast('📥 Exportando reclamaciones... (Simulado)', 'success')">
+              <span class="material-symbols-rounded" style="font-size:1.15rem;">download</span> Exportar
+            </button>
+          </div>
+        </div>
+
+        <!-- Claims Queue table wrapper card -->
+        <div class="portal-panel-card slide-up" style="padding:0; overflow:hidden; background-color:#FFFFFF; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9; animation-delay:0.05s;">
+          <table class="queue-table" style="width:100%; border-collapse:collapse; margin:0;">
+            <thead style="background-color:#F8FAFC; border-bottom:1px solid #E2E8F0;">
               <tr>
-                <th>ID</th>
-                <th>Paciente</th>
-                <th>Aseguradora</th>
-                <th>Departamento</th>
-                <th>Monto Total</th>
-                <th>Fecha</th>
-                <th>Estado</th>
-                <th>Acciones</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">ID</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Paciente</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Aseguradora</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Departamento</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Monto Total</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Fecha</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Estado</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase; text-align:center;">Acciones</th>
               </tr>
             </thead>
             <tbody id="claims-table-body">
-              <!-- Populated dynamically -->
+              <!-- Populated dynamically via js/admin.js -->
+            </tbody>
+          </table>
+
+          <!-- Pagination Footer from mockup image -->
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border-top:1px solid #E2E8F0; background-color:#FFFFFF;">
+            <span style="font-size:0.85rem; color:#64748B; font-weight:500;">Mostrando 1 a 4 de 128 resultados</span>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <button style="width:32px; height:32px; border-radius:8px; border:1px solid #E2E8F0; display:flex; align-items:center; justify-content:center; color:#64748B;" onclick="showToast('Página Anterior (Simulación)', 'warning')"><span class="material-symbols-rounded" style="font-size:1.2rem;">chevron_left</span></button>
+              <button style="width:32px; height:32px; border-radius:8px; background-color:#007A64; color:#FFFFFF; font-weight:800; display:flex; align-items:center; justify-content:center;">1</button>
+              <button style="width:32px; height:32px; border-radius:8px; border:1px solid #E2E8F0; display:flex; align-items:center; justify-content:center; color:#64748B; font-weight:600;" onclick="showToast('Navegando a Página 2 (Simulación)', 'success')">2</button>
+              <button style="width:32px; height:32px; border-radius:8px; border:1px solid #E2E8F0; display:flex; align-items:center; justify-content:center; color:#64748B; font-weight:600;" onclick="showToast('Navegando a Página 3 (Simulación)', 'success')">3</button>
+              <span style="color:#94A3B8; font-size:0.85rem;">...</span>
+              <button style="width:32px; height:32px; border-radius:8px; border:1px solid #E2E8F0; display:flex; align-items:center; justify-content:center; color:#64748B; font-weight:600;" onclick="showToast('Navegando a Página 32 (Simulación)', 'success')">32</button>
+              <button style="width:32px; height:32px; border-radius:8px; border:1px solid #E2E8F0; display:flex; align-items:center; justify-content:center; color:#64748B;" onclick="showToast('Siguiente Página (Simulación)', 'warning')"><span class="material-symbols-rounded" style="font-size:1.2rem;">chevron_right</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Confidenciality notice footer -->
+        <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:20px; font-size:0.75rem; color:#94A3B8; font-weight:600;">
+          <span class="material-symbols-rounded" style="font-size:1rem; color:#94A3B8;">verified_user</span>
+          La información mostrada es confidencial y está protegida.
+        </div>
+      </div>
+
+      <!-- 3. PATIENTS VIEW -->
+      <div id="admin-view-patients" class="hidden">
+        <div class="portal-top-bar" style="margin-bottom:var(--space-lg);">
+          <div>
+            <h1 class="portal-page-title" style="font-size:1.8rem; font-weight:800; color:#0F172A; margin-bottom:4px;">Directorio de Pacientes</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 500;">Expedientes clínicos y afiliación de pólizas HMC.</p>
+          </div>
+        </div>
+        <div class="portal-panel-card" style="padding:0; overflow:hidden; background-color:#FFFFFF; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+          <table class="queue-table" style="width:100%; border-collapse:collapse;">
+            <thead style="background-color:#F8FAFC; border-bottom:1px solid #E2E8F0;">
+              <tr>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">ID Paciente</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Nombre Completo</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Edad / Género</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Aseguradora</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Condición Diagnóstica</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase; text-align:center;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:14px 20px;"><strong>HMC-98231-AM</strong></td>
+                <td style="padding:14px 20px;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="assets/patient_avatar.png" style="width:36px; height:36px; border-radius:50%; border:1px solid #E2E8F0; object-fit:cover;">
+                    <span style="font-weight:700; color:#1E293B;">Andrés Mendoza Salgado</span>
+                  </div>
+                </td>
+                <td style="padding:14px 20px; font-weight:500;">34 años / Masculino</td>
+                <td style="padding:14px 20px;"><span style="color:#0284C7; font-weight:600;">Ficohsa Seguros</span></td>
+                <td style="padding:14px 20px;"><span style="background-color:#FFF8E1; color:#E65100; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Hipertensión Arterial</span></td>
+                <td style="padding:14px 20px; text-align:center;">
+                  <button class="claim-btn view-details ripple-btn" style="border: 1px solid #E2E8F0; background-color:#F8FAFC; color:#64748B; padding:6px; border-radius:8px; width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center;" onclick="showToast('🔍 Mostrando Ficha Médica de Andrés Mendoza', 'success')"><span class="material-symbols-rounded" style="font-size:1.2rem;">visibility</span></button>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:14px 20px;"><strong>HMC-77218-CZ</strong></td>
+                <td style="padding:14px 20px;">
+                  <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="assets/doctor_female_profile_2.png" style="width:36px; height:36px; border-radius:50%; border:1px solid #E2E8F0; object-fit:cover;">
+                    <span style="font-weight:700; color:#1E293B;">Carmen Elena Zelaya</span>
+                  </div>
+                </td>
+                <td style="padding:14px 20px; font-weight:500;">62 años / Femenino</td>
+                <td style="padding:14px 20px;"><span style="color:#DC2626; font-weight:600;">Seguros Atlántida</span></td>
+                <td style="padding:14px 20px;"><span style="background-color:#FFEBEE; color:#D32F2F; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Dolor Torácico</span></td>
+                <td style="padding:14px 20px; text-align:center;">
+                  <button class="claim-btn view-details ripple-btn" style="border: 1px solid #E2E8F0; background-color:#F8FAFC; color:#64748B; padding:6px; border-radius:8px; width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center;" onclick="showToast('🔍 Mostrando Ficha Médica de Carmen Zelaya', 'success')"><span class="material-symbols-rounded" style="font-size:1.2rem;">visibility</span></button>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
       </div>
+
+      <!-- 4. APPOINTMENTS VIEW -->
+      <div id="admin-view-appointments" class="hidden">
+        <div class="portal-top-bar" style="margin-bottom:var(--space-lg);">
+          <div>
+            <h1 class="portal-page-title" style="font-size:1.8rem; font-weight:800; color:#0F172A; margin-bottom:4px;">Control de Citas Médicas</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 500;">Consultas programadas para el día de hoy.</p>
+          </div>
+        </div>
+        <div class="portal-panel-card" style="padding:0; overflow:hidden; background-color:#FFFFFF; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+          <table class="queue-table" style="width:100%; border-collapse:collapse;">
+            <thead style="background-color:#F8FAFC; border-bottom:1px solid #E2E8F0;">
+              <tr>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">ID Cita</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Médico Especialista</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Especialidad</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Fecha / Hora</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Tipo</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Consultorio / Sala</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:14px 20px;"><strong>APT-1002</strong></td>
+                <td style="padding:14px 20px; font-weight:700; color:#1E293B;">Dr. Carlos Valladares</td>
+                <td style="padding:14px 20px; font-weight:600; color:#475569;">Cardiología</td>
+                <td style="padding:14px 20px; font-weight:500;">2026-07-28 &bull; 09:30 AM</td>
+                <td style="padding:14px 20px;"><span style="background-color:#EFF6FF; color:#1D4ED8; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Presencial</span></td>
+                <td style="padding:14px 20px; color:#64748B; font-weight:500;">Consultorio 302 - Torre A</td>
+              </tr>
+              <tr>
+                <td style="padding:14px 20px;"><strong>APT-1003</strong></td>
+                <td style="padding:14px 20px; font-weight:700; color:#1E293B;">Dra. Sofía Murillo</td>
+                <td style="padding:14px 20px; font-weight:600; color:#475569;">Dermatología</td>
+                <td style="padding:14px 20px; font-weight:500;">2026-07-31 &bull; 02:00 PM</td>
+                <td style="padding:14px 20px;"><span style="background-color:#ECFDF5; color:#047857; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Telemedicina</span></td>
+                <td style="padding:14px 20px; color:#64748B; font-weight:500;">Sala Virtual EMR</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 5. CONSULTS VIEW -->
+      <div id="admin-view-consults" class="hidden">
+        <div class="portal-top-bar" style="margin-bottom:var(--space-lg);">
+          <div>
+            <h1 class="portal-page-title" style="font-size:1.8rem; font-weight:800; color:#0F172A; margin-bottom:4px;">Consultas en Progreso</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 500;">Monitoreo de salas de consulta activa y triage de emergencias.</p>
+          </div>
+        </div>
+        <div class="portal-panel-card" style="padding:0; overflow:hidden; background-color:#FFFFFF; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+          <table class="queue-table" style="width:100%; border-collapse:collapse;">
+            <thead style="background-color:#F8FAFC; border-bottom:1px solid #E2E8F0;">
+              <tr>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Sala</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Paciente</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Médico a Cargo</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Motivo de Consulta</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:14px 20px; font-weight:700; color:#007A64;">Sala Virtual 1</td>
+                <td style="padding:14px 20px; font-weight:700; color:#1E293B;">Andrés Mendoza Salgado</td>
+                <td style="padding:14px 20px; font-weight:600;">Dr. Carlos Valladares</td>
+                <td style="padding:14px 20px; color:#64748B; font-weight:500;">Chequeo Trimestral Control de Presión</td>
+                <td style="padding:14px 20px;"><span style="background-color:#E0F2FE; color:#0369A1; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">En consulta</span></td>
+              </tr>
+              <tr>
+                <td style="padding:14px 20px; font-weight:700; color:#007A64;">Triage Urgencias</td>
+                <td style="padding:14px 20px; font-weight:700; color:#1E293B;">Carmen Elena Zelaya</td>
+                <td style="padding:14px 20px; font-weight:600;">Dra. Elena Zelaya</td>
+                <td style="padding:14px 20px; color:#64748B; font-weight:500;">Dolor Torácico de Esfuerzo</td>
+                <td style="padding:14px 20px;"><span style="background-color:#FEF3C7; color:#B45309; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Triage Realizado</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 6. BILLING VIEW -->
+      <div id="admin-view-billing" class="hidden">
+        <div class="portal-top-bar" style="margin-bottom:var(--space-lg);">
+          <div>
+            <h1 class="portal-page-title" style="font-size:1.8rem; font-weight:800; color:#0F172A; margin-bottom:4px;">Registro de Facturación</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 500;">Resumen consolidado de copagos y liquidaciones médicas.</p>
+          </div>
+        </div>
+        <div class="portal-panel-card" style="padding:0; overflow:hidden; background-color:#FFFFFF; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+          <table class="queue-table" style="width:100%; border-collapse:collapse;">
+            <thead style="background-color:#F8FAFC; border-bottom:1px solid #E2E8F0;">
+              <tr>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Factura No.</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Paciente</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Monto Total</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Aseguradora</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:14px 20px;"><strong>FAC-2026-901</strong></td>
+                <td style="padding:14px 20px; font-weight:700; color:#1E293B;">Andrés Mendoza Salgado</td>
+                <td style="padding:14px 20px; font-weight:700; color:#1E293B;">L. 8,400.00</td>
+                <td style="padding:14px 20px; font-weight:600; color:#475569;">Ficohsa Seguros (85% Cobertura)</td>
+                <td style="padding:14px 20px;"><span style="background-color:#D1FAE5; color:#059669; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Liquidado</span></td>
+              </tr>
+              <tr>
+                <td style="padding:14px 20px;"><strong>FAC-2026-902</strong></td>
+                <td style="padding:14px 20px; font-weight:700; color:#1E293B;">Estela Maria Bonilla</td>
+                <td style="padding:14px 20px; font-weight:700; color:#1E293B;">L. 12,350.00</td>
+                <td style="padding:14px 20px; font-weight:600; color:#475569;">Seguros Atlántida (80% Cobertura)</td>
+                <td style="padding:14px 20px;"><span style="background-color:#D1FAE5; color:#059669; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Liquidado</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 7. REPORTS VIEW -->
+      <div id="admin-view-reports" class="hidden">
+        <div class="portal-top-bar" style="margin-bottom:var(--space-lg);">
+          <div>
+            <h1 class="portal-page-title" style="font-size:1.8rem; font-weight:800; color:#0F172A; margin-bottom:4px;">Reportes Corporativos</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 500;">Indicadores operativos consolidados de Honduras Medical Center.</p>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:var(--space-md); margin-bottom:var(--space-lg);">
+          <!-- Chart 1: Bed Occupancy -->
+          <div class="portal-panel-card" style="background-color:#FFFFFF; border-radius:16px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+            <h3 style="color:#0F172A; margin-bottom:4px; font-weight:800; font-size:1.1rem;">Ocupación Hospitalaria por Ala</h3>
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:20px;">Capacidad en camas ocupadas vs. total disponible (2026).</p>
+            
+            <div style="height:200px; display:flex; align-items:flex-end; justify-content:space-between; gap:20px; padding:10px 10px 30px; border-bottom:1px solid #E2E8F0; position:relative;">
+              <!-- Grid lines -->
+              <div style="position:absolute; left:0; right:0; bottom:30px; height:1px; border-bottom:1px dashed #E2E8F0; width:100%;"></div>
+              <div style="position:absolute; left:0; right:0; bottom:95px; height:1px; border-bottom:1px dashed #E2E8F0; width:100%;"></div>
+              <div style="position:absolute; left:0; right:0; bottom:160px; height:1px; border-bottom:1px dashed #E2E8F0; width:100%;"></div>
+
+              <!-- Bar 1: UCI -->
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                <span style="font-size:0.75rem; font-weight:700; color:#475569;">80%</span>
+                <div style="width:100%; max-width:32px; height:128px; background-color:#F59E0B; border-radius:6px; transition:transform 0.2s;" onmouseover="this.style.transform='scaleY(1.05)'" onmouseout="this.style.transform='scaleY(1)'"></div>
+                <span style="font-size:0.7rem; font-weight:700; color:#64748B; text-align:center; position:absolute; bottom:10px;">UCI</span>
+              </div>
+              <!-- Bar 2: Urgencias -->
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                <span style="font-size:0.75rem; font-weight:700; color:#475569;">96%</span>
+                <div style="width:100%; max-width:32px; height:154px; background-color:#EF4444; border-radius:6px; transition:transform 0.2s;" onmouseover="this.style.transform='scaleY(1.05)'" onmouseout="this.style.transform='scaleY(1)'"></div>
+                <span style="font-size:0.7rem; font-weight:700; color:#64748B; text-align:center; position:absolute; bottom:10px;">Urgencias</span>
+              </div>
+              <!-- Bar 3: Maternidad -->
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                <span style="font-size:0.75rem; font-weight:700; color:#475569;">60%</span>
+                <div style="width:100%; max-width:32px; height:96px; background-color:#10B981; border-radius:6px; transition:transform 0.2s;" onmouseover="this.style.transform='scaleY(1.05)'" onmouseout="this.style.transform='scaleY(1)'"></div>
+                <span style="font-size:0.7rem; font-weight:700; color:#64748B; text-align:center; position:absolute; bottom:10px;">Maternidad</span>
+              </div>
+              <!-- Bar 4: Hosp. Gral -->
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                <span style="font-size:0.75rem; font-weight:700; color:#475569;">90%</span>
+                <div style="width:100%; max-width:32px; height:144px; background-color:#F59E0B; border-radius:6px; transition:transform 0.2s;" onmouseover="this.style.transform='scaleY(1.05)'" onmouseout="this.style.transform='scaleY(1)'"></div>
+                <span style="font-size:0.7rem; font-weight:700; color:#64748B; text-align:center; position:absolute; bottom:10px;">Hosp. Gral</span>
+              </div>
+              <!-- Bar 5: Pediatría -->
+              <div style="flex:1; display:flex; flex-direction:column; align-items:center; gap:8px;">
+                <span style="font-size:0.75rem; font-weight:700; color:#475569;">40%</span>
+                <div style="width:100%; max-width:32px; height:64px; background-color:#10B981; border-radius:6px; transition:transform 0.2s;" onmouseover="this.style.transform='scaleY(1.05)'" onmouseout="this.style.transform='scaleY(1)'"></div>
+                <span style="font-size:0.7rem; font-weight:700; color:#64748B; text-align:center; position:absolute; bottom:10px;">Pediatría</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chart 2: Insurance Distribution -->
+          <div class="portal-panel-card" style="background-color:#FFFFFF; border-radius:16px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+            <h3 style="color:#0F172A; margin-bottom:4px; font-weight:800; font-size:1.1rem;">Participación de Aseguradoras</h3>
+            <p style="color:var(--text-muted); font-size:0.8rem; margin-bottom:20px;">Distribución de fondos liquidados por aseguradoras asociadas.</p>
+            
+            <div style="display:flex; flex-direction:column; gap:14px; padding-top:10px;">
+              <!-- Ficohsa -->
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:4px;">
+                  <span>Ficohsa Seguros</span>
+                  <span>45% (L. 828K)</span>
+                </div>
+                <div style="height:10px; background-color:#F1F5F9; border-radius:5px; overflow:hidden;">
+                  <div style="width:45%; height:100%; background-color:#0284C7; border-radius:5px;"></div>
+                </div>
+              </div>
+              <!-- Atlántida -->
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:4px;">
+                  <span>Seguros Atlántida</span>
+                  <span>30% (L. 552K)</span>
+                </div>
+                <div style="height:10px; background-color:#F1F5F9; border-radius:5px; overflow:hidden;">
+                  <div style="width:30%; height:100%; background-color:#DC2626; border-radius:5px;"></div>
+                </div>
+              </div>
+              <!-- MAPFRE -->
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:4px;">
+                  <span>MAPFRE Honduras</span>
+                  <span>15% (L. 276K)</span>
+                </div>
+                <div style="height:10px; background-color:#F1F5F9; border-radius:5px; overflow:hidden;">
+                  <div style="width:15%; height:100%; background-color:#EF4444; border-radius:5px;"></div>
+                </div>
+              </div>
+              <!-- CREFISA -->
+              <div>
+                <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:700; color:#475569; margin-bottom:4px;">
+                  <span>Seguros CREFISA</span>
+                  <span>10% (L. 184K)</span>
+                </div>
+                <div style="height:10px; background-color:#F1F5F9; border-radius:5px; overflow:hidden;">
+                  <div style="width:10%; height:100%; background-color:#059669; border-radius:5px;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail card below -->
+        <div class="portal-panel-card" style="background-color:#FFFFFF; border-radius:16px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+          <h3 style="color:#0F172A; margin-bottom:12px; font-weight:800; font-size:1.1rem;">Resumen Anual de Rendimiento</h3>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Tendencias consolidadas y métricas de hospitalización general del ejercicio fiscal 2026.</p>
+          <div style="padding:20px; border-radius:12px; background-color:#F8FAFC; text-align:center; color:#007A64; font-weight:700; display:flex; align-items:center; justify-content:center; gap:8px;">
+            <span class="material-symbols-rounded" style="color:#007A64;">check_circle</span>
+            Métricas consolidadas y listas para auditoría interna de dirección HMC.
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. USERS VIEW -->
+      <div id="admin-view-users" class="hidden">
+        <div class="portal-top-bar" style="margin-bottom:var(--space-lg);">
+          <div>
+            <h1 class="portal-page-title" style="font-size:1.8rem; font-weight:800; color:#0F172A; margin-bottom:4px;">Usuarios y Personal HMC</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 500;">Directorio de cuentas del ecosistema digital.</p>
+          </div>
+        </div>
+        <div class="portal-panel-card" style="padding:0; overflow:hidden; background-color:#FFFFFF; border-radius:16px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+          <table class="queue-table" style="width:100%; border-collapse:collapse;">
+            <thead style="background-color:#F8FAFC; border-bottom:1px solid #E2E8F0;">
+              <tr>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Nombre de Usuario</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Rol de Sistema</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Área Médica</th>
+                <th style="padding:16px 20px; font-size:0.75rem; font-weight:800; color:#64748B; text-transform:uppercase;">Estado de Cuenta</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:14px 20px; font-weight:700; color:#1E293B;">Dr. Carlos Valladares</td>
+                <td style="padding:14px 20px; font-weight:600; color:#475569;">Médico Especialista</td>
+                <td style="padding:14px 20px; color:#64748B; font-weight:500;">Cardiología</td>
+                <td style="padding:14px 20px;"><span style="background-color:#D1FAE5; color:#059669; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Activo</span></td>
+              </tr>
+              <tr>
+                <td style="padding:14px 20px; font-weight:700; color:#1E293B;">Jessica Abrego</td>
+                <td style="padding:14px 20px; font-weight:600; color:#475569;">Administradora Principal</td>
+                <td style="padding:14px 20px; color:#64748B; font-weight:500;">Dirección Médica</td>
+                <td style="padding:14px 20px;"><span style="background-color:#D1FAE5; color:#059669; padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">Activo</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 9. SETTINGS VIEW -->
+      <div id="admin-view-settings" class="hidden">
+        <div class="portal-top-bar" style="margin-bottom:var(--space-lg);">
+          <div>
+            <h1 class="portal-page-title" style="font-size:1.8rem; font-weight:800; color:#0F172A; margin-bottom:4px;">Configuración General</h1>
+            <p style="color:var(--text-muted); font-size:0.9rem; font-weight: 500;">Parámetros globales de encriptación y seguridad del portal.</p>
+          </div>
+        </div>
+        <div class="portal-panel-card" style="background-color:#FFFFFF; border-radius:16px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.02); border:1px solid #F1F5F9;">
+          <h3 style="color:#0F172A; margin-bottom:12px; font-weight:800;">Preferencias de Seguridad</h3>
+          <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:16px;">Configura la encriptación de datos, los logs de auditoría y los niveles de acceso para el personal hospitalario.</p>
+          <button class="start-consult-btn ripple-btn" style="background-color:#007A64; color:#FFFFFF; font-weight:700; border-radius:8px; padding:10px 18px;" onclick="showToast('⚙️ Cambios guardados correctamente.', 'success')">Guardar Configuración</button>
+        </div>
+      </div>
     </main>
   </div>
+
+  <!-- Toast Container for modern notifications -->
+  <div id="toast-container" style="position: fixed; bottom: 24px; right: 24px; z-index: 10000; display: flex; flex-direction: column; gap: 8px;"></div>
 
   <script src="js/mockData.js"></script>
   <script src="js/admin.js"></script>

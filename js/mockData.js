@@ -102,7 +102,7 @@ const HMCDatabase = {
       id: "apt-1",
       doctorName: "Dr. Carlos Valladares",
       specialty: "Cardiología",
-      avatar: "doctor_male_profile.jpg",
+      avatar: "doctor_male_profile.png",
       date: "2026-07-28",
       time: "09:30 AM",
       room: "Consultorio 302 - Torre A",
@@ -114,7 +114,7 @@ const HMCDatabase = {
       id: "apt-2",
       doctorName: "Dra. Sofía Murillo",
       specialty: "Dermatología",
-      avatar: "doctor_female_profile.jpg",
+      avatar: "doctor_female_profile.png",
       date: "2026-07-31",
       time: "02:00 PM",
       room: "Videoconsulta HMC",
@@ -126,7 +126,7 @@ const HMCDatabase = {
       id: "apt-3",
       doctorName: "Dr. Carlos Valladares",
       specialty: "Cardiología",
-      avatar: "doctor_male_profile.jpg",
+      avatar: "doctor_male_profile.png",
       date: "2026-05-15",
       time: "10:00 AM",
       room: "Consultorio 302 - Torre A",
@@ -144,7 +144,7 @@ const HMCDatabase = {
       rating: "4.9 (124 reviews)",
       education: "Universidad Nacional Autónoma de Honduras (UNAH), Especialidad en Cardiología por el Instituto Nacional de Cardiología Ignacio Chávez (México).",
       languages: "Español, Inglés",
-      avatar: "doctor_male_profile.jpg",
+      avatar: "doctor_male_profile.png",
       cost: "L. 1,200.00",
       availability: ["09:00 AM", "09:30 AM", "11:00 AM", "03:30 PM"],
       bio: "Especialista en prevención de enfermedades cardiovasculares, control de hipertensión y arritmias con más de 12 años de trayectoria médica."
@@ -156,7 +156,7 @@ const HMCDatabase = {
       rating: "4.8 (98 reviews)",
       education: "Universidad de Costa Rica, Subespecialidad en Dermatología Estética y Oncológica.",
       languages: "Español, Inglés, Francés",
-      avatar: "doctor_female_profile.jpg",
+      avatar: "doctor_female_profile.png",
       cost: "L. 1,400.00",
       availability: ["01:30 PM", "02:00 PM", "04:00 PM"],
       bio: "Apasionada por la salud de la piel. Especialista en acné, rejuvenecimiento celular, mapeo de lunares y prevención de cáncer cutáneo."
@@ -168,7 +168,7 @@ const HMCDatabase = {
       rating: "5.0 (210 reviews)",
       education: "UNAH, Especialidad en Pediatría por el Hospital Pediátrico de Barcelona.",
       languages: "Español",
-      avatar: "doctor_male_profile_2.jpg",
+      avatar: "doctor_male_profile_2.png",
       cost: "L. 1,000.00",
       availability: ["08:00 AM", "10:30 AM", "02:30 PM"],
       bio: "Dedicado al cuidado integral del niño y del adolescente, enfatizando la medicina preventiva y el desarrollo psicomotriz saludable."
@@ -180,7 +180,7 @@ const HMCDatabase = {
       rating: "4.7 (86 reviews)",
       education: "Universidad de El Salvador, Postgrado en Medicina Interna por Baylor College of Medicine (USA).",
       languages: "Español, Inglés",
-      avatar: "doctor_female_profile_2.jpg",
+      avatar: "doctor_female_profile_2.png",
       cost: "L. 1,100.00",
       availability: ["09:00 AM", "02:00 PM", "03:00 PM"],
       bio: "Diagnóstico y tratamiento de condiciones médicas complejas en adultos, control metabólico integral y chequeo clínico ejecutivo."
@@ -225,7 +225,7 @@ const HMCDatabase = {
       indication: "Dolor torácico atípico leve transitorio.",
       findings: "Campos pulmonares limpios, sin evidencia de infiltrados focales ni derrames. Silueta cardiaca dentro de límites normales. Estructura ósea torácica intacta.",
       conclusion: "Estudio radiológico de tórax de aspecto normal y negativo para patología cardiopulmonar aguda.",
-      imagePath: "radiology_chest_xray.jpg",
+      imagePath: "radiology_chest_xray.png",
       status: "Listo"
     }
   ],
@@ -248,7 +248,7 @@ const HMCDatabase = {
   chats: {
     "doc-1": [
       { sender: "doctor", text: "Hola Andrés, ¿cómo has estado sintiendo la presión en las mañanas?", time: "2026-07-22 09:15 AM" },
-      { sender: "patient", text: "Hola Dr. Valladares, me he sentido muy bien. Mi promedio de presión ha estado en 118/78.", time: "2026-07-22 09:30 AM" },
+      { sender: "patient", text: "Hola Dr. Valladares, me he estado sintiendo muy bien. Mi presión ha estado controlada.", time: "2026-07-22 09:30 AM" },
       { sender: "doctor", text: "Excelente reporte. Eso significa que la dosis de Losartán de 50mg es la correcta. Continúa así y nos vemos en la consulta del 28 de Julio.", time: "2026-07-22 09:35 AM" }
     ],
     "doc-2": [

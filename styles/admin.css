@@ -1,4 +1,4 @@
-/* HMC Connect - Standalone Administrative Dashboard CSS */
+/* HMC Connect - Standalone Administrative Dashboard CSS - Iteration 2 Refined */
 
 .admin-container {
   display: flex;
@@ -10,33 +10,39 @@
 /* Sidebar Navigation */
 .admin-sidebar {
   width: 260px;
-  background-color: #1E293B; /* Sleek dark admin sidebar */
-  color: #F8FAFC;
+  background-color: #FFFFFF; /* Modern clean white admin sidebar */
+  color: #334155;
   display: flex;
   flex-direction: column;
-  padding: var(--space-lg) var(--space-md);
+  padding: 24px 16px;
   flex-shrink: 0;
+  border-right: 1px solid #E2E8F0;
+  height: 100vh;
+  position: sticky;
+  top: 0;
+  overflow-y: auto;
 }
 
 .admin-brand {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  font-size: 1.4rem;
+  gap: 10px;
+  font-size: 1.25rem;
   font-weight: 800;
-  color: #FFFFFF;
+  color: #007A64; /* Brand green text logo */
   margin-bottom: var(--space-xl);
+  letter-spacing: -0.6px;
 }
 
-.admin-brand span {
-  color: var(--secondary-blue);
-  font-size: 1.8rem;
+.admin-brand-svg {
+  width: 28px;
+  height: 28px;
 }
 
 .admin-nav-list {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: 6px;
   flex-grow: 1;
 }
 
@@ -44,23 +50,85 @@
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  padding: 12px 16px;
-  border-radius: var(--radius-sm);
-  color: #94A3B8;
+  padding: 10px 14px;
+  border-radius: 10px;
+  color: #64748B;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: all 0.2s ease;
   width: 100%;
   text-align: left;
+  background: none;
+  border: none;
 }
 
-.admin-nav-item:hover, .admin-nav-item.active {
-  background-color: rgba(255,255,255,0.08);
-  color: #FFFFFF;
+.admin-nav-item:hover {
+  background-color: #F8FAFC;
+  color: #0F172A;
+}
+
+.admin-nav-item.active {
+  background-color: #E6F4F1 !important;
+  color: #007A64 !important;
+  font-weight: 700;
+}
+
+.admin-nav-item.active span {
+  color: #007A64 !important;
 }
 
 .admin-nav-item span {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
+  color: #94A3B8;
+  transition: color 0.2s ease;
+}
+
+.admin-nav-item:hover span {
+  color: #64748B;
+}
+
+/* Sidebar Profile Card */
+.sidebar-profile-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-profile-card:hover {
+  background-color: #F1F5F9;
+}
+
+.sidebar-profile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid #E2E8F0;
+}
+
+.sidebar-profile-info {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.sidebar-profile-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.sidebar-profile-role {
+  font-size: 0.72rem;
+  color: #64748B;
+  font-weight: 500;
 }
 
 /* Content Area */
@@ -89,8 +157,8 @@
   background-color: #FFFFFF;
   border-radius: var(--radius-md);
   padding: var(--space-md) var(--space-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  border: none;
+  box-shadow: 0 4px 12px rgba(38, 50, 56, 0.03);
   position: relative;
   overflow: hidden;
 }
@@ -99,7 +167,7 @@
   font-size: 0.8rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.5px;
   margin-bottom: var(--space-xs);
 }
@@ -140,10 +208,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border-radius: var(--radius-sm);
   font-size: 0.88rem;
-  font-weight: 600;
+  font-weight: 700;
   margin-bottom: 4px;
 }
 
@@ -192,9 +260,19 @@
   color: var(--success-green);
 }
 
+.claim-btn.approve:hover {
+  background-color: var(--success-green);
+  color: #FFFFFF;
+}
+
 .claim-btn.reject {
   background-color: var(--danger-light);
   color: var(--danger-red);
+}
+
+.claim-btn.reject:hover {
+  background-color: var(--danger-red);
+  color: #FFFFFF;
 }
 
 /* Status pills */
@@ -203,6 +281,10 @@
   font-weight: 700;
   padding: 4px 8px;
   border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.3s ease;
 }
 .status-pill.pendiente {
   background-color: var(--warning-light);
@@ -216,3 +298,344 @@
   background-color: var(--danger-light);
   color: var(--danger-red);
 }
+
+/* Tooltip definitions */
+.chart-tooltip {
+  position: absolute;
+  background-color: rgba(15, 23, 42, 0.95);
+  color: #FFFFFF;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  pointer-events: none;
+  box-shadow: var(--shadow-md);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 1000;
+  line-height: 1.4;
+  transition: opacity 0.15s ease, transform 0.1s ease;
+  opacity: 0;
+  transform: translate(-50%, -100%) scale(0.9);
+}
+
+.chart-tooltip.visible {
+  opacity: 1;
+  transform: translate(-50%, -100%) scale(1);
+}
+
+.chart-area-fill {
+  fill: url(#chart-gradient);
+  transition: all 0.3s ease;
+}
+
+.chart-point {
+  fill: var(--primary-blue);
+  stroke: #FFFFFF;
+  stroke-width: 2px;
+  cursor: pointer;
+  transition: r 0.2s ease, fill 0.2s ease;
+}
+
+.chart-point:hover {
+  r: 7;
+  fill: var(--secondary-blue);
+}
+
+/* Heatmap Hover & Tooltips */
+.heatmap-row {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.heatmap-row:hover {
+  transform: translateX(4px);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Pulse animation for real-time synchronization */
+.pulse-icon {
+  animation: pulse-glow 1.5s infinite ease-in-out;
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--success-green);
+}
+
+@keyframes pulse-glow {
+  0% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px var(--success-green); }
+  100% { transform: scale(1); opacity: 0.6; }
+}
+
+/* Toast styling consistent with Android & EMR */
+.hmc-portal-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-lg);
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  min-width: 280px;
+  max-width: 400px;
+}
+
+.hmc-portal-toast span.icon {
+  font-size: 1.35rem;
+}
+
+/* Table Row Actions animations */
+.claim-row-updating {
+  animation: row-highlight 0.8s ease;
+}
+
+@keyframes row-highlight {
+  0% { background-color: rgba(25, 118, 210, 0.08); }
+  100% { background-color: transparent; }
+}
+
+/* --- Occupancy Horizontal Progress Bars --- */
+.occupancy-dept-row {
+  margin-bottom: var(--space-md);
+  cursor: pointer;
+}
+
+.occupancy-dept-row:last-child {
+  margin-bottom: 0;
+}
+
+.occupancy-dept-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  font-weight: 700;
+  margin-bottom: 5px;
+  color: var(--text-dark);
+}
+
+.occupancy-progress-bg {
+  height: 8px;
+  background-color: var(--bg-gray);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.occupancy-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Recent Claims Compact Cards --- */
+.recent-claim-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.recent-claim-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(38, 50, 56, 0.04);
+  border-color: var(--primary-blue);
+}
+
+.recent-claim-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.recent-claim-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.recent-claim-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* --- Recent Activity Timeline --- */
+.timeline-container {
+  padding-left: 8px;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 14px;
+  position: relative;
+  padding-bottom: 4px;
+}
+
+.timeline-line {
+  position: absolute;
+  left: 7px;
+  top: 20px;
+  bottom: -22px;
+  width: 2px;
+  background-color: var(--border-color);
+}
+
+.timeline-item:last-child .timeline-line {
+  display: none;
+}
+
+.timeline-dot-indicator {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background-color: var(--primary-blue);
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  z-index: 2;
+  flex-shrink: 0;
+  margin-top: 3px;
+  transition: transform 0.2s ease;
+}
+
+.timeline-item:hover .timeline-dot-indicator {
+  transform: scale(1.2);
+}
+
+.timeline-dot-indicator.green { background-color: var(--success-green); }
+.timeline-dot-indicator.orange { background-color: var(--warning-orange); }
+.timeline-dot-indicator.red { background-color: var(--danger-red); }
+.timeline-dot-indicator.blue { background-color: var(--primary-blue); }
+
+.timeline-content {
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--text-dark);
+}
+
+.timeline-time {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+/* --- Redesigned Claims Module Styling --- */
+#admin-view-claims .kpi-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#admin-view-claims .kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.04);
+}
+
+/* Redesigned Premium queue-table styles */
+#admin-view-claims .queue-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0;
+  background-color: #FFFFFF;
+}
+
+#admin-view-claims .queue-table th {
+  padding: 16px 20px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: left;
+  border-bottom: 1px solid #E2E8F0;
+  background-color: #F8FAFC;
+}
+
+#admin-view-claims .queue-table td {
+  padding: 14px 20px;
+  vertical-align: middle;
+  font-size: 0.88rem;
+  color: #334155;
+  border-bottom: 1px solid #F1F5F9;
+  transition: background-color 0.2s ease;
+}
+
+#admin-view-claims .queue-table tr {
+  transition: background-color 0.2s ease;
+}
+
+/* Alternating hover effects */
+#admin-view-claims .queue-table tr:hover td {
+  background-color: #F8FAFC;
+}
+
+/* Status badge styles */
+#admin-view-claims .status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 8px;
+  text-transform: capitalize;
+}
+
+#admin-view-claims .status-pill.pendiente {
+  background-color: #FEF3C7 !important;
+  color: #D97706 !important;
+  border: 1px solid rgba(217, 119, 6, 0.15);
+}
+
+#admin-view-claims .status-pill.aprobada {
+  background-color: #D1FAE5 !important;
+  color: #059669 !important;
+  border: 1px solid rgba(5, 150, 105, 0.15);
+}
+
+#admin-view-claims .status-pill.rechazada {
+  background-color: #FEE2E2 !important;
+  color: #DC2626 !important;
+  border: 1px solid rgba(220, 38, 38, 0.15);
+}
+
+/* Action button micro-animations */
+#admin-view-claims .claim-btn {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+#admin-view-claims .claim-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+#admin-view-claims .claim-btn:active {
+  transform: translateY(0);
+}
+
+/* Filters styling */
+#admin-view-claims select {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#admin-view-claims select:focus {
+  border-color: #007A64 !important;
+  box-shadow: 0 0 0 3px rgba(0, 122, 100, 0.1);
+  outline: none;
+}
+
+
+

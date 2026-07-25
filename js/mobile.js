@@ -20,8 +20,22 @@ document.addEventListener("DOMContentLoaded", () => {
   let activeRecordType = null; // 'lab' or 'imaging'
   let activeRecordId = null;
 
+  function releaseWebcam() {
+    const videoElement = document.getElementById("local-video-feed");
+    if (videoElement && videoElement.srcObject) {
+      videoElement.srcObject.getTracks().forEach(track => track.stop());
+      videoElement.srcObject = null;
+    }
+  }
+
   function showScreen(screenId) {
     console.log("Switching to screen:", screenId);
+    
+    // Safety release of webcam when leaving call view
+    if (currentScreen === "telehealth-call" && screenId !== "telehealth-call") {
+      releaseWebcam();
+    }
+
     screens.forEach(s => {
       const el = document.getElementById(`screen-${s}`);
       if (el) {
@@ -262,7 +276,7 @@ document.addEventListener("DOMContentLoaded", () => {
       card.className = "doctor-card slide-up";
       card.innerHTML = `
         <div class="doctor-card-header">
-          <img src="assets/${doc.avatar}" alt="${doc.name}" class="doctor-avatar" onerror="this.src='https://via.placeholder.com/150'">
+          <img src="assets/${doc.avatar}" alt="${doc.name}" class="doctor-avatar" onerror="this.src='assets/doctor_male_profile.png'">
           <div class="doctor-meta">
             <h3 class="doctor-name">${doc.name}</h3>
             <span class="doctor-specialty">${doc.specialty}</span>
@@ -338,33 +352,44 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const time = selectedSlot.innerText;
-      const dayName = selectedDayBtn.querySelector(".day-name").innerText;
-      const dayNum = selectedDayBtn.querySelector(".day-num").innerText;
+      // Prevent duplicate submissions and show progress state
+      confirmBookBtn.disabled = true;
+      confirmBookBtn.innerText = "Programando Cita...";
 
-      // Add to database
-      const newApt = {
-        id: `apt-${Date.now()}`,
-        doctorName: activeDoctor.name,
-        specialty: activeDoctor.specialty,
-        avatar: activeDoctor.avatar,
-        date: `2026-07-${dayNum}`,
-        time: time,
-        room: activeDoctor.specialty === "Dermatología" ? "Videoconsulta HMC" : "Consultorio 302 - Torre A",
-        type: activeDoctor.specialty === "Dermatología" ? "Telemedicina" : "Presencial",
-        status: "Confirmada",
-        canCheckIn: true
-      };
+      setTimeout(() => {
+        const time = selectedSlot.innerText;
+        const dayName = selectedDayBtn.querySelector(".day-name").innerText;
+        const dayNum = selectedDayBtn.querySelector(".day-num").innerText;
 
-      db.appointments.unshift(newApt);
-      
-      // Update screen details
-      document.getElementById("confirm-doctor-name").innerText = activeDoctor.name;
-      document.getElementById("confirm-doctor-specialty").innerText = activeDoctor.specialty;
-      document.getElementById("confirm-date-time").innerText = `${dayName} 2026-07-${dayNum} a las ${time}`;
-      document.getElementById("confirm-type").innerText = newApt.type;
+        // Add to database
+        const newApt = {
+          id: `apt-${Date.now()}`,
+          doctorName: activeDoctor.name,
+          specialty: activeDoctor.specialty,
+          avatar: activeDoctor.avatar,
+          date: `2026-07-${dayNum}`,
+          time: time,
+          room: activeDoctor.specialty === "Dermatología" ? "Videoconsulta HMC" : "Consultorio 302 - Torre A",
+          type: activeDoctor.specialty === "Dermatología" ? "Telemedicina" : "Presencial",
+          status: "Confirmada",
+          canCheckIn: true
+        };
 
-      showScreen("booking-confirm");
+        db.appointments.unshift(newApt);
+        
+        // Update screen details
+        document.getElementById("confirm-doctor-name").innerText = activeDoctor.name;
+        document.getElementById("confirm-doctor-specialty").innerText = activeDoctor.specialty;
+        document.getElementById("confirm-date-time").innerText = `${dayName} 2026-07-${dayNum} a las ${time}`;
+        document.getElementById("confirm-type").innerText = newApt.type;
+
+        // Reset button state
+        confirmBookBtn.disabled = false;
+        confirmBookBtn.innerText = "Confirmar y Programar Cita";
+
+        showToast("✅ Cita programada correctamente.");
+        showScreen("booking-confirm");
+      }, 1000);
     });
   }
 
@@ -394,7 +419,7 @@ document.addEventListener("DOMContentLoaded", () => {
         card.className = "appointment-card slide-up";
         card.innerHTML = `
           <div class="apt-header">
-            <img src="assets/${apt.avatar}" alt="${apt.doctorName}" class="apt-doc-avatar" onerror="this.src='https://via.placeholder.com/150'">
+            <img src="assets/${apt.avatar}" alt="${apt.doctorName}" class="apt-doc-avatar" onerror="this.src='assets/doctor_male_profile.png'">
             <div class="apt-doc-details">
               <h4 class="apt-doc-name">${apt.doctorName}</h4>
               <span class="apt-doc-specialty">${apt.specialty}</span>
@@ -456,7 +481,7 @@ document.addEventListener("DOMContentLoaded", () => {
         card.className = "appointment-card completed slide-up";
         card.innerHTML = `
           <div class="apt-header">
-            <img src="assets/${apt.avatar}" alt="${apt.doctorName}" class="apt-doc-avatar" onerror="this.src='https://via.placeholder.com/150'">
+            <img src="assets/${apt.avatar}" alt="${apt.doctorName}" class="apt-doc-avatar" onerror="this.src='assets/doctor_male_profile.png'">
             <div class="apt-doc-details">
               <h4 class="apt-doc-name">${apt.doctorName}</h4>
               <span class="apt-doc-specialty">${apt.specialty}</span>
@@ -699,7 +724,7 @@ document.addEventListener("DOMContentLoaded", () => {
     content.innerHTML = `
       <div class="imaging-viewer-container">
         <div class="imaging-viewport-wrapper">
-          <img src="assets/${img.imagePath}" id="interactive-xray-view" alt="${img.studyName}" class="xray-image" onerror="this.src='https://via.placeholder.com/400x400/263238/FFFFFF?text=X-RAY+FILM'">
+          <img src="assets/${img.imagePath}" id="interactive-xray-view" alt="${img.studyName}" class="xray-image" onerror="this.src='assets/radiology_chest_xray.png'">
         </div>
         <div class="imaging-controls">
           <label>Zoom</label>

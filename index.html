@@ -3,177 +3,137 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HMC Connect - Portal de Ecosistema Digital</title>
+  <title>HMC Connect - Ecosistema de Salud Digital</title>
   <link rel="stylesheet" href="styles/base.css">
   <link rel="stylesheet" href="styles/hub.css">
 </head>
 <body>
   <div class="hub-container">
-    <!-- Corporate Header -->
-    <header class="hub-header fade-in">
-      <div class="hub-logo">
-        <span class="material-symbols-rounded icon">favorite</span>
+    <!-- Premium Navigation Bar -->
+    <header class="hub-nav-bar fade-in">
+      <div class="hmc-brand-logo">
+        <svg class="hmc-logo-svg" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Premium Brand Logo: Interlocking Medical Cross and Circles -->
+          <rect x="15" y="4" width="10" height="32" rx="5" fill="#1976D2" />
+          <rect x="4" y="15" width="32" height="10" rx="5" fill="#1976D2" />
+          <circle cx="20" cy="20" r="8" fill="#42A5F5" />
+          <circle cx="20" cy="20" r="4" fill="#E3F2FD" />
+        </svg>
         HMC Connect
       </div>
-      <p class="hub-subtitle">
-        El ecosistema digital de salud de Honduras Medical Center. Una experiencia unificada para pacientes, médicos y administración diseñada bajo estándares mundiales de excelencia médica y tecnológica.
-      </p>
+      <nav class="hub-nav-links">
+        <a href="#ecosystem">Ecosistema</a>
+        <a href="#demos">Prototipos</a>
+        <a href="#design-system">Sistema de Diseño</a>
+      </nav>
     </header>
 
-    <!-- Platform Launcher Grid -->
-    <main class="hub-grid slide-up">
-      <!-- iOS Patient App Card -->
-      <section class="hub-card">
-        <div class="hub-card-icon">
-          <span class="material-symbols-rounded">phone_iphone</span>
-        </div>
-        <h2 class="hub-card-title">Patient App (iOS)</h2>
-        <p class="hub-card-desc">
-          Aplicación móvil nativa para iPhone. Diseñada bajo las directrices del Apple Human Interface Guidelines, con transiciones fluidas, autenticación biométrica Face ID y un panel de salud emocional e intuitivo.
+    <!-- Large Hero Section with Real Photography -->
+    <section class="hero-section slide-up">
+      <div class="hero-content">
+        <span class="hero-tag">Ecosistema Médico Integrado</span>
+        <h1 class="hero-headline">El Cuidado de tu Salud en la Era Digital</h1>
+        <p class="hero-description">
+          Honduras Medical Center presenta HMC Connect: una suite digital de nivel comercial que vincula en tiempo real a pacientes, médicos y directivos para ofrecer una atención médica de prestigio, confiable y humana.
         </p>
-        <a href="mobile_ios.html" target="_blank" class="hub-card-link ripple-btn">
-          Lanzar App iPhone
-          <span class="material-symbols-rounded">arrow_forward</span>
-        </a>
-      </section>
+      </div>
+      <div class="hero-image-wrapper">
+        <img class="hero-image" src="assets/hospital_hero.png" alt="HMC Hospital Lobby">
+        <div class="hero-image-overlay"></div>
+      </div>
+    </section>
 
-      <!-- Android Patient App Card -->
-      <section class="hub-card">
-        <div class="hub-card-icon">
-          <span class="material-symbols-rounded">phone_android</span>
-        </div>
-        <h2 class="hub-card-title">Patient App (Android)</h2>
-        <p class="hub-card-desc">
-          Aplicación móvil para Android desarrollada en cumplimiento estricto con Material Design 3. Incorpora botones de acción flotantes (FAB), barra de navegación con indicador de píldora y tipografía adaptativa.
+    <!-- Section 1: Ecosystem Overview -->
+    <section class="connectivity-panel slide-up" id="ecosystem" style="animation-delay: 0.1s;">
+      <div class="intro-section" style="margin-bottom: var(--space-md);">
+        <h2 class="section-title">Una Experiencia Médica Sincronizada</h2>
+        <p class="section-subtitle">
+          Nuestra tecnología conecta de forma fluida cada punto de la jornada médica, reduciendo tiempos de espera y eliminando la fricción administrativa.
         </p>
-        <a href="mobile_android.html" target="_blank" class="hub-card-link ripple-btn">
-          Lanzar App Android
-          <span class="material-symbols-rounded">arrow_forward</span>
-        </a>
-      </section>
-
-      <!-- Physician Portal Card -->
-      <section class="hub-card">
-        <div class="hub-card-icon">
-          <span class="material-symbols-rounded">medical_information</span>
+      </div>
+      <div class="connectivity-grid">
+        <div class="conn-item">
+          <span class="material-symbols-rounded" style="font-size:2rem; color:var(--primary-blue); margin-bottom:8px;">patient_list</span>
+          <h4>Para el Paciente</h4>
+          <p>Control de medicamentos, videoconsultas fluidas, registros de laboratorio instantáneos y código QR de emergencia en una app móvil.</p>
         </div>
-        <h2 class="hub-card-title">Portal Médico</h2>
-        <p class="hub-card-desc">
-          Plataforma web de escritorio para el cuerpo médico. Ofrece una consola unificada de telemedicina, expediente clínico digital interactivo (EMR), generador de recetas electrónicas y visualizador de radiología.
-        </p>
-        <a href="physician_portal.html" target="_blank" class="hub-card-link ripple-btn">
-          Abrir Portal Médico
-          <span class="material-symbols-rounded">arrow_forward</span>
-        </a>
-      </section>
-
-      <!-- Admin Dashboard Card -->
-      <section class="hub-card">
-        <div class="hub-card-icon">
-          <span class="material-symbols-rounded">dashboard</span>
+        <div class="conn-item">
+          <span class="material-symbols-rounded" style="font-size:2rem; color:var(--primary-blue); margin-bottom:8px;">medical_services</span>
+          <h4>Para el Médico</h4>
+          <p>Consola unificada de videoconsulta, historial clínico interactivo y generador de recetas electrónicas con firma segura digital.</p>
         </div>
-        <h2 class="hub-card-title">Dashboard Ejecutivo</h2>
-        <p class="hub-card-desc">
-          Consola administrativa de grado corporativo. Panel analítico de control operativo con KPIs en tiempo real (ingresos, ocupación, satisfacción), mapas de calor de salas y gestión de reclamaciones financieras.
-        </p>
-        <a href="admin_dashboard.html" target="_blank" class="hub-card-link ripple-btn">
-          Abrir Dashboard Admin
-          <span class="material-symbols-rounded">arrow_forward</span>
-        </a>
-      </section>
-    </main>
-
-    <!-- Design System Section -->
-    <section class="ds-panel slide-up" style="animation-delay: 0.2s;">
-      <h2 class="ds-title">HMC Connect Design System</h2>
-      <p class="ds-subtitle">Tokens visuales y componentes compartidos del ecosistema digital.</p>
-
-      <!-- Color Swatches -->
-      <h3 class="ds-section-title">Paleta de Colores</h3>
-      <div class="ds-color-grid">
-        <div class="ds-color-card">
-          <div class="ds-color-block" style="background-color: #1976D2;"></div>
-          <div class="ds-color-info">
-            <div class="ds-color-name">Primary Blue</div>
-            <div class="ds-color-hex">#1976D2</div>
-          </div>
-        </div>
-        <div class="ds-color-card">
-          <div class="ds-color-block" style="background-color: #42A5F5;"></div>
-          <div class="ds-color-info">
-            <div class="ds-color-name">Secondary Blue</div>
-            <div class="ds-color-hex">#42A5F5</div>
-          </div>
-        </div>
-        <div class="ds-color-card">
-          <div class="ds-color-block" style="background-color: #E3F2FD;"></div>
-          <div class="ds-color-info">
-            <div class="ds-color-name">Light Blue</div>
-            <div class="ds-color-hex">#E3F2FD</div>
-          </div>
-        </div>
-        <div class="ds-color-card">
-          <div class="ds-color-block" style="background-color: #2E7D32;"></div>
-          <div class="ds-color-info">
-            <div class="ds-color-name">Success Green</div>
-            <div class="ds-color-hex">#2E7D32</div>
-          </div>
-        </div>
-        <div class="ds-color-card">
-          <div class="ds-color-block" style="background-color: #F9A825;"></div>
-          <div class="ds-color-info">
-            <div class="ds-color-name">Warning Orange</div>
-            <div class="ds-color-hex">#F9A825</div>
-          </div>
-        </div>
-        <div class="ds-color-card">
-          <div class="ds-color-block" style="background-color: #D32F2F;"></div>
-          <div class="ds-color-info">
-            <div class="ds-color-name">Danger Red</div>
-            <div class="ds-color-hex">#D32F2F</div>
-          </div>
+        <div class="conn-item">
+          <span class="material-symbols-rounded" style="font-size:2rem; color:var(--primary-blue); margin-bottom:8px;">analytics</span>
+          <h4>Para la Directiva</h4>
+          <p>Indicadores clave en tiempo real (KPIs), ocupación de salas del hospital y conciliación inmediata de reclamaciones de seguros.</p>
         </div>
       </div>
+    </section>
 
-      <!-- Typography and Spacing -->
-      <div class="ds-typo-grid">
-        <div>
-          <h3 class="ds-section-title">Tipografía</h3>
-          <div class="ds-sample-box mb-md">
-            <div class="ds-font-title" style="font-family: var(--font-inter);">Inter Font Family</div>
-            <div class="ds-font-sub">Utilizada como fuente principal para interfaces web, iOS y paneles ejecutivos. Altamente legible y moderna.</div>
+    <!-- Section 2: Product Demos -->
+    <section id="demos" style="margin-bottom: var(--space-xxl);">
+      <h2 class="cards-row-title">Explora los Módulos del Producto</h2>
+      <main class="hub-grid">
+        <!-- iOS App -->
+        <article class="hub-card">
+          <div class="hub-card-top">
+            <div class="hub-card-icon">
+              <span class="material-symbols-rounded">phone_iphone</span>
+            </div>
+            <h3 class="hub-card-title">App del Paciente (iOS)</h3>
+            <p class="hub-card-desc">Experiencia nativa para iPhone. Diseñada bajo las directrices del Apple HIG con desbloqueo biométrico por Face ID, agenda interactiva y expedientes clínicos.</p>
           </div>
-          <div class="ds-sample-box">
-            <div class="ds-font-title" style="font-family: var(--font-roboto);">Roboto Flex</div>
-            <div class="ds-font-sub">Utilizada para la aplicación nativa de Android, adaptándose a las guías de Material Design 3 de Google.</div>
+          <a href="mobile_ios.html" target="_blank" class="hub-card-link ripple-btn">
+            Explore Application
+            <span class="material-symbols-rounded">arrow_forward</span>
+          </a>
+        </article>
+
+        <!-- Android App -->
+        <article class="hub-card">
+          <div class="hub-card-top">
+            <div class="hub-card-icon">
+              <span class="material-symbols-rounded">phone_android</span>
+            </div>
+            <h3 class="hub-card-title">App del Paciente (Android)</h3>
+            <p class="hub-card-desc">Construida bajo Material Design 3. Posee barra de navegación tipo píldora, inputs MD3, lector de huella dactilar integrado y botón de acción flotante (FAB).</p>
           </div>
-        </div>
-        <div>
-          <h3 class="ds-section-title">Sistema de Espaciado (8px Grid)</h3>
-          <div class="ds-spacer-list">
-            <div class="ds-spacer-item">
-              <span style="width: 60px; font-weight:600; font-size:0.85rem;">8px (xs)</span>
-              <div class="ds-spacer-bar" style="width: 8px;"></div>
+          <a href="mobile_android.html" target="_blank" class="hub-card-link ripple-btn">
+            Explore Application
+            <span class="material-symbols-rounded">arrow_forward</span>
+          </a>
+        </article>
+
+        <!-- Physician Portal -->
+        <article class="hub-card">
+          <div class="hub-card-top">
+            <div class="hub-card-icon">
+              <span class="material-symbols-rounded">medical_information</span>
             </div>
-            <div class="ds-spacer-item">
-              <span style="width: 60px; font-weight:600; font-size:0.85rem;">16px (sm)</span>
-              <div class="ds-spacer-bar" style="width: 16px;"></div>
-            </div>
-            <div class="ds-spacer-item">
-              <span style="width: 60px; font-weight:600; font-size:0.85rem;">24px (md)</span>
-              <div class="ds-spacer-bar" style="width: 24px;"></div>
-            </div>
-            <div class="ds-spacer-item">
-              <span style="width: 60px; font-weight:600; font-size:0.85rem;">32px (lg)</span>
-              <div class="ds-spacer-bar" style="width: 32px;"></div>
-            </div>
-            <div class="ds-spacer-item">
-              <span style="width: 60px; font-weight:600; font-size:0.85rem;">48px (xl)</span>
-              <div class="ds-spacer-bar" style="width: 48px;"></div>
-            </div>
+            <h3 class="hub-card-title">Portal del Cuerpo Médico</h3>
+            <p class="hub-card-desc">Consola web para computadoras. Incluye historial clínico en pantalla dividida, lector de radiografías digitales y generador de firmas de recetas.</p>
           </div>
-        </div>
-      </div>
+          <a href="physician_portal.html" target="_blank" class="hub-card-link ripple-btn">
+            Open Demo
+            <span class="material-symbols-rounded">arrow_forward</span>
+          </a>
+        </article>
+
+        <!-- Admin Dashboard -->
+        <article class="hub-card">
+          <div class="hub-card-top">
+            <div class="hub-card-icon">
+              <span class="material-symbols-rounded">dashboard</span>
+            </div>
+            <h3 class="hub-card-title">Dashboard Administrativo</h3>
+            <p class="hub-card-desc">Portal financiero ejecutivo. Permite visualizar tendencias de ingresos diarios en gráficos interactivos, mapas de ocupación y conciliación de seguros.</p>
+          </div>
+          <a href="admin_dashboard.html" target="_blank" class="hub-card-link ripple-btn">
+            Open Demo
+            <span class="material-symbols-rounded">arrow_forward</span>
+          </a>
+        </article>
+      </main>
     </section>
   </div>
 </body>

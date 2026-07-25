@@ -1,4 +1,4 @@
-/* HMC Connect - Standalone Physician Portal CSS */
+/* HMC Connect - Standalone Physician Portal CSS - Iteration 2 Refined */
 
 .portal-container {
   display: flex;
@@ -22,15 +22,17 @@
 .portal-brand {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
-  font-size: 1.4rem;
+  gap: 10px;
+  font-size: 1.3rem;
   font-weight: 800;
   color: var(--primary-blue);
   margin-bottom: var(--space-xl);
+  letter-spacing: -0.6px;
 }
 
-.portal-brand span {
-  font-size: 1.8rem;
+.portal-brand-svg {
+  width: 28px;
+  height: 28px;
 }
 
 .portal-user-profile {
@@ -41,6 +43,7 @@
   padding: var(--space-sm) var(--space-md);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-xl);
+  border: 1px solid rgba(25,118,210,0.06);
 }
 
 .portal-user-avatar {
@@ -49,17 +52,19 @@
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid #FFFFFF;
+  box-shadow: var(--shadow-sm);
 }
 
 .portal-user-meta h4 {
   font-size: 0.95rem;
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
 }
 
 .portal-user-meta span {
   font-size: 0.75rem;
   color: var(--text-muted);
+  font-weight: 500;
 }
 
 .portal-nav-list {
@@ -76,7 +81,7 @@
   padding: 12px 16px;
   border-radius: var(--radius-sm);
   color: var(--text-muted);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.95rem;
   transition: all 0.2s ease;
   width: 100%;
@@ -108,9 +113,9 @@
 }
 
 .portal-page-title {
-  font-size: 1.8rem;
+  font-size: 1.85rem;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.8px;
 }
 
 /* Quick Metrics Row */
@@ -131,15 +136,15 @@
   background-color: #FFFFFF;
   border-radius: var(--radius-md);
   padding: var(--space-md) var(--space-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
+  border: none;
+  box-shadow: 0 4px 12px rgba(38, 50, 56, 0.03);
 }
 
 .portal-metric-card h5 {
   font-size: 0.82rem;
   color: var(--text-muted);
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 0.5px;
   margin-bottom: 4px;
 }
@@ -167,8 +172,8 @@
   background-color: #FFFFFF;
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
-  border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-md);
+  border: none;
+  box-shadow: 0 10px 25px rgba(38, 50, 56, 0.04);
 }
 
 .portal-panel-header {
@@ -180,7 +185,8 @@
 
 .portal-panel-title {
   font-size: 1.2rem;
-  font-weight: 700;
+  font-weight: 800;
+  letter-spacing: -0.3px;
 }
 
 /* Patient Queue Table */
@@ -195,7 +201,7 @@
   background-color: var(--bg-gray);
   font-size: 0.8rem;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-muted);
   border-bottom: 1px solid var(--border-color);
 }
@@ -248,14 +254,14 @@
 .start-consult-btn {
   background-color: var(--primary-blue);
   color: #FFFFFF;
-  padding: 8px 16px;
+  padding: 8px 18px;
   border-radius: var(--radius-sm);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 0.85rem;
 }
 
 .start-consult-btn:hover {
-  background-color: #1565C0;
+  background-color: var(--secondary-blue);
 }
 
 /* Agenda list items */
@@ -275,7 +281,7 @@
 }
 
 .agenda-time {
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.85rem;
   color: var(--primary-blue);
 }
@@ -312,7 +318,7 @@
   background-color: #FFFFFF;
   border-radius: var(--radius-lg);
   padding: var(--space-md) var(--space-lg);
-  border: 1px solid var(--border-color);
+  border: none;
   box-shadow: var(--shadow-sm);
   margin-bottom: var(--space-lg);
   display: flex;
@@ -332,7 +338,7 @@
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.8rem;
-  font-weight: 700;
+  font-weight: 800;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -426,7 +432,7 @@
   color: #FFFFFF;
   padding: 10px;
   border-radius: var(--radius-sm);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 0.88rem;
   text-align: center;
 }
@@ -470,3 +476,174 @@
   width: 100%;
   height: 100%;
 }
+
+/* --- Patient Clinical Summary Card --- */
+.emr-patient-summary-card {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: var(--space-sm);
+  background-color: #FFFFFF;
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  box-shadow: 0 4px 12px rgba(38, 50, 56, 0.02);
+  margin-bottom: var(--space-lg);
+  border: 1px solid var(--border-color);
+}
+
+@media (max-width: 900px) {
+  .emr-patient-summary-card {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .emr-patient-summary-card {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.summary-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-right: 1px solid var(--border-color);
+}
+
+.summary-metric:last-child {
+  border-right: none;
+}
+
+.summary-metric-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.summary-metric-value {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+/* --- Telehealth bottom control bar --- */
+.emr-telehealth-controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  background-color: rgba(30, 41, 59, 0.9);
+  padding: 10px;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  margin-top: -6px; /* merge with video block */
+}
+
+.emr-telehealth-btn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.15);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.emr-telehealth-btn:hover {
+  background-color: rgba(255,255,255,0.3);
+  transform: scale(1.05);
+}
+
+.emr-telehealth-btn.active {
+  background-color: var(--danger-red);
+}
+
+.emr-telehealth-btn span {
+  font-size: 1.25rem;
+}
+
+/* --- Prescription Preview Modal Overlay --- */
+.rx-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1500;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.rx-modal-card {
+  width: 480px;
+  background-color: #FFFFFF;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  border: 2px solid var(--primary-blue);
+  overflow: hidden;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.rx-modal-body {
+  padding: var(--space-lg);
+}
+
+.rx-modal-actions {
+  display: flex;
+  border-top: 1px solid var(--border-color);
+}
+
+.rx-modal-action-btn {
+  flex-grow: 1;
+  padding: 14px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-align: center;
+  border: none;
+  background: none;
+}
+
+.rx-modal-action-btn.cancel {
+  color: var(--text-muted);
+  border-right: 1px solid var(--border-color);
+}
+
+.rx-modal-action-btn.cancel:hover {
+  background-color: var(--bg-gray);
+}
+
+.rx-modal-action-btn.confirm {
+  color: #FFFFFF;
+  background-color: var(--primary-blue);
+}
+
+.rx-modal-action-btn.confirm:hover {
+  background-color: var(--secondary-blue);
+}
+
+/* --- Portal Toast Notifications --- */
+.hmc-portal-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  padding: 14px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-lg);
+  animation: slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  min-width: 280px;
+  max-width: 400px;
+}
+
+.hmc-portal-toast span.icon {
+  font-size: 1.35rem;
+}
+

@@ -24,9 +24,15 @@
     <!-- 1. SPLASH SCREEN -->
     <div class="screen splash-screen" id="screen-splash">
       <div class="splash-logo-container">
-        <span class="material-symbols-rounded">favorite</span>
+        <div class="splash-logo-ring">
+          <svg viewBox="0 0 40 40" style="width: 48px; height: 48px;" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="15" y="4" width="10" height="32" rx="4" fill="#FFFFFF" />
+            <rect x="4" y="15" width="32" height="10" rx="4" fill="#FFFFFF" />
+            <circle cx="20" cy="20" r="8" fill="#42A5F5" />
+          </svg>
+        </div>
         <h1 class="splash-title">HMC Connect</h1>
-        <p style="opacity: 0.8; font-size: 0.9rem; margin-top: 4px;">Honduras Medical Center</p>
+        <p style="opacity: 0.85; font-size: 0.88rem; font-weight: 500; letter-spacing: 0.5px; margin-top: 4px;">HONDURAS MEDICAL CENTER</p>
       </div>
     </div>
 
@@ -50,9 +56,15 @@
     <!-- 3. LOGIN SCREEN -->
     <div class="screen hidden" id="screen-login" style="padding-top: var(--space-xl);">
       <div class="login-header-box fade-in">
-        <span class="material-symbols-rounded">favorite</span>
-        <h2 class="onboarding-title" style="margin-top: var(--space-sm);">HMC Connect</h2>
-        <p style="color: var(--text-muted); font-size: 0.9rem;">Bienvenido de vuelta. Inicia sesión.</p>
+        <div class="logo-box">
+          <svg viewBox="0 0 40 40" style="width: 38px; height: 38px;" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="15" y="4" width="10" height="32" rx="4" fill="#1976D2" />
+            <rect x="4" y="15" width="32" height="10" rx="4" fill="#1976D2" />
+            <circle cx="20" cy="20" r="8" fill="#42A5F5" />
+          </svg>
+        </div>
+        <h2 class="onboarding-title" style="margin-top: var(--space-xs); font-size: 1.6rem;">HMC Connect</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">Bienvenido de vuelta. Inicia sesión.</p>
       </div>
 
       <div class="login-input-group slide-up">
@@ -89,12 +101,19 @@
 
     <!-- 5. PATIENT DASHBOARD / HOME -->
     <div class="screen hidden" id="screen-dashboard">
-      <div class="dashboard-greeting-row">
+      <div class="dashboard-greeting-row" style="margin-top: var(--space-md);">
         <div>
-          <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">Hola, ¡buenos días!</p>
-          <h2 style="font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px;">Andrés Mendoza</h2>
+          <div class="ios-header-logo" style="margin-bottom: 2px;">
+            <svg viewBox="0 0 40 40" style="width: 22px; height: 22px;" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="15" y="4" width="10" height="32" rx="4" fill="#1976D2" />
+              <rect x="4" y="15" width="32" height="10" rx="4" fill="#1976D2" />
+              <circle cx="20" cy="20" r="8" fill="#42A5F5" />
+            </svg>
+            HMC Connect
+          </div>
+          <h2 style="font-size: 1.55rem; font-weight: 800; letter-spacing: -0.6px;">Andrés Mendoza</h2>
         </div>
-        <img src="https://via.placeholder.com/150" class="dashboard-avatar" id="patient-avatar" alt="Avatar">
+        <img src="assets/patient_avatar.png" class="dashboard-avatar" id="patient-avatar" alt="Avatar">
       </div>
 
       <div class="dashboard-motivation-card slide-up">
@@ -191,7 +210,7 @@
             <p id="meds-progress-text">2/3 Completados</p>
           </div>
         </div>
-        <span class="material-symbols-rounded" style="color: var(--text-muted);">arrow_forward_ios</span>
+        <span class="material-symbols-rounded" style="color: var(--text-muted); font-size:1.1rem;">arrow_forward_ios</span>
       </div>
 
       <div class="meds-checklist" id="meds-checklist">
@@ -201,7 +220,7 @@
 
     <!-- 6. DOCTOR SEARCH -->
     <div class="screen hidden" id="screen-doctor-search">
-      <div class="ios-header">
+      <div class="ios-header" style="margin-top: 8px;">
         <h2 class="ios-large-title">Buscar Médico</h2>
       </div>
 
@@ -225,7 +244,7 @@
       </div>
 
       <div class="profile-doctor-hero">
-        <img id="profile-doc-avatar" src="https://via.placeholder.com/150" alt="Doctor">
+        <img id="profile-doc-avatar" src="assets/doctor_male_profile.png" alt="Doctor">
         <h3 id="profile-doc-name" style="font-size: 1.3rem; font-weight:800;">Dr. Carlos Valladares</h3>
         <span id="profile-doc-specialty" style="color:var(--primary-blue); font-weight:600; font-size:0.95rem;">Cardiólogo</span>
         <br>
@@ -303,7 +322,7 @@
 
     <!-- 9. APPOINTMENTS TAB -->
     <div class="screen hidden" id="screen-appointments">
-      <div class="ios-header">
+      <div class="ios-header" style="margin-top: 8px;">
         <h2 class="ios-large-title">Mis Citas</h2>
       </div>
 
@@ -335,7 +354,7 @@
           <span class="label">Espera</span>
         </div>
         
-        <img id="waiting-doctor-avatar" src="https://via.placeholder.com/150" class="doctor-avatar" style="width: 80px; height:80px; margin: 0 auto 16px;" alt="Doctor">
+        <img id="waiting-doctor-avatar" src="assets/doctor_male_profile.png" class="doctor-avatar" style="width: 80px; height:80px; margin: 0 auto 16px;" alt="Doctor">
         <h3 id="waiting-doctor-name" style="font-size: 1.25rem; font-weight:800;">Dr. Carlos Valladares</h3>
         <span id="waiting-doctor-specialty" style="color:var(--primary-blue); font-weight:600;">Cardiología</span>
         
@@ -380,7 +399,7 @@
 
     <!-- 12. MEDICAL RECORDS TAB -->
     <div class="screen hidden" id="screen-records">
-      <div class="ios-header">
+      <div class="ios-header" style="margin-top: 8px;">
         <h2 class="ios-large-title">Expediente</h2>
       </div>
 
@@ -414,7 +433,7 @@
 
     <!-- 14. QR MEDICAL CARD -->
     <div class="screen hidden" id="screen-qr-card">
-      <div class="ios-header">
+      <div class="ios-header" style="margin-top: 8px;">
         <h2 class="ios-large-title">Tarjeta HMC</h2>
       </div>
       
@@ -474,7 +493,7 @@
 
     <!-- 15. SETTINGS SCREEN -->
     <div class="screen hidden" id="screen-settings">
-      <div class="ios-header">
+      <div class="ios-header" style="margin-top: 8px;">
         <h2 class="ios-large-title">Ajustes</h2>
       </div>
 
@@ -495,7 +514,7 @@
             <span class="material-symbols-rounded icon">shield</span>
             <span>Privacidad y HIPAA</span>
           </div>
-          <span class="material-symbols-rounded" style="color:var(--text-muted);">arrow_forward_ios</span>
+          <span class="material-symbols-rounded" style="color:var(--text-muted); font-size:1rem;">arrow_forward_ios</span>
         </div>
 
         <div class="settings-item">
@@ -503,7 +522,7 @@
             <span class="material-symbols-rounded icon">contact_phone</span>
             <span>Contactos de Emergencia</span>
           </div>
-          <span class="material-symbols-rounded" style="color:var(--text-muted);">arrow_forward_ios</span>
+          <span class="material-symbols-rounded" style="color:var(--text-muted); font-size:1rem;">arrow_forward_ios</span>
         </div>
 
         <div class="settings-item" style="flex-direction: column; align-items: flex-start; gap: 8px;">
