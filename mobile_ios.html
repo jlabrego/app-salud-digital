@@ -164,9 +164,9 @@
             </svg>
             HMC Connect
           </div>
-          <h2 style="font-size: 1.55rem; font-weight: 800; letter-spacing: -0.6px;">Andrés Mendoza</h2>
+          <h2 style="font-size: 1.55rem; font-weight: 800; letter-spacing: -0.6px; cursor: pointer;" id="dashboard-patient-name" data-nav="profile">Andrés Mendoza</h2>
         </div>
-        <img src="assets/patient_avatar.png" class="dashboard-avatar" id="patient-avatar" alt="Avatar">
+        <img src="assets/patient_avatar.png" class="dashboard-avatar" id="patient-avatar" alt="Avatar" style="cursor: pointer;" data-nav="profile">
       </div>
 
       <div class="dashboard-motivation-card slide-up">
@@ -565,6 +565,14 @@
       </div>
 
       <div class="settings-menu-list">
+        <div class="settings-item" data-nav="profile" style="cursor: pointer;">
+          <div class="settings-meta">
+            <span class="material-symbols-rounded icon">person</span>
+            <span>Mi Información Personal</span>
+          </div>
+          <span class="material-symbols-rounded" style="color:var(--text-muted); font-size:1rem;">arrow_forward_ios</span>
+        </div>
+
         <div class="settings-item">
           <div class="settings-meta">
             <span class="material-symbols-rounded icon">dark_mode</span>
@@ -734,6 +742,69 @@
       <!-- Save Button -->
       <button class="onboarding-btn ripple-btn" id="ios-save-monitoring-btn">
         Guardar Reporte Diario
+      </button>
+    </div>
+
+    <!-- 17. MY PROFILE SCREEN -->
+    <div class="screen hidden" id="screen-profile" style="padding-top: var(--space-md); padding-bottom: 100px;">
+      <!-- Header with back button -->
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+        <button style="background: none; border: none; padding: 6px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--primary);" data-nav="dashboard">
+          <span class="material-symbols-rounded" style="font-size: 1.6rem;">arrow_back_ios</span>
+        </button>
+        <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-dark); margin: 0;">Mi Perfil</h2>
+      </div>
+
+      <!-- Profile Card Container -->
+      <div class="portal-panel-card" style="padding: 20px; border-radius: 16px; background-color: #FFFFFF; border: 1px solid var(--border-color); text-align: center; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+        <div style="position: relative; display: inline-block; margin-bottom: 12px;">
+          <img id="profile-picture-display" src="assets/patient_avatar.png" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-light); box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+          <button onclick="triggerPhotoUpload()" style="position: absolute; bottom: 0; right: 0; background-color: var(--primary); color: #FFFFFF; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: 2px solid #FFFFFF; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+            <span class="material-symbols-rounded" style="font-size: 1rem;">photo_camera</span>
+          </button>
+          <input type="file" id="patient-photo-input" style="display: none;" onchange="handlePhotoSelected(this)">
+        </div>
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--text-dark); margin: 0 0 4px 0;" id="profile-full-name">Andrés Mendoza Salgado</h3>
+        <span style="font-size: 0.75rem; font-weight: 700; background-color: var(--primary-light); padding: 4px 10px; border-radius: 20px; color: var(--primary-dark);">Expediente: HMC-98231-AM</span>
+      </div>
+
+      <!-- Personal Info Fields -->
+      <div style="display: flex; flex-direction: column; gap: 14px; text-align: left;">
+        <div>
+          <label style="display: block; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; padding-left: 4px;">Nombre Completo</label>
+          <input type="text" id="edit-profile-name" value="Andrés Mendoza Salgado" style="width: 100%; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 14px; font-size: 0.9rem; background-color: #F8FAFC; outline: none; box-sizing: border-box; color: var(--text-dark);">
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; padding-left: 4px;">Identidad (ID)</label>
+          <input type="text" id="edit-profile-dni" value="0801-1992-04829" style="width: 100%; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 14px; font-size: 0.9rem; background-color: #F1F5F9; outline: none; box-sizing: border-box; color: var(--text-muted);" disabled>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label style="display: block; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; padding-left: 4px;">Teléfono</label>
+            <input type="text" id="edit-profile-phone" value="+504 9982-3341" style="width: 100%; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 14px; font-size: 0.9rem; background-color: #F8FAFC; outline: none; box-sizing: border-box; color: var(--text-dark);">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; padding-left: 4px;">F. Nacimiento</label>
+            <input type="text" id="edit-profile-dob" value="12 Oct 1992" style="width: 100%; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 14px; font-size: 0.9rem; background-color: #F1F5F9; outline: none; box-sizing: border-box; color: var(--text-muted);" disabled>
+          </div>
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; padding-left: 4px;">Correo Electrónico</label>
+          <input type="email" id="edit-profile-email" value="andres.mendoza@gmail.com" style="width: 100%; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 14px; font-size: 0.9rem; background-color: #F8FAFC; outline: none; box-sizing: border-box; color: var(--text-dark);">
+        </div>
+
+        <div>
+          <label style="display: block; font-size: 0.72rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; padding-left: 4px;">Dirección Residencia</label>
+          <input type="text" id="edit-profile-address" value="Col. Lomas del Guijarro, Tegucigalpa" style="width: 100%; border: 1px solid var(--border-color); border-radius: 12px; padding: 12px 14px; font-size: 0.9rem; background-color: #F8FAFC; outline: none; box-sizing: border-box; color: var(--text-dark);">
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <button class="onboarding-btn ripple-btn" onclick="savePatientProfileChanges()" style="margin-top: 24px;">
+        Guardar Cambios
       </button>
     </div>
 

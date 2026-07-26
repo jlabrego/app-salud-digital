@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "splash", "onboarding", "login", "register", "biometric", "dashboard", 
     "doctor-search", "doctor-profile", "booking-confirm",
     "appointments", "telehealth-waiting", "telehealth-call",
-    "records", "record-detail", "qr-card", "settings"
+    "records", "record-detail", "qr-card", "settings", "health-monitoring", "profile"
   ];
 
   let currentScreen = "splash";
@@ -953,13 +953,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Load daily reports and appointments from localStorage if available
-  const storedReports = localStorage.getItem('patientDailyReports');
-  if (storedReports) {
-    window.HMCDatabase.patientDailyReports = JSON.parse(storedReports);
+  try {
+    const storedReports = localStorage.getItem('patientDailyReports');
+    if (storedReports && storedReports !== "undefined" && storedReports !== "null") {
+      window.HMCDatabase.patientDailyReports = JSON.parse(storedReports);
+    }
+  } catch(e) {
+    console.error("Error parsing stored reports:", e);
   }
-  const storedAppts = localStorage.getItem('appointments');
-  if (storedAppts) {
-    window.HMCDatabase.appointments = JSON.parse(storedAppts);
+
+  try {
+    const storedAppts = localStorage.getItem('appointments');
+    if (storedAppts && storedAppts !== "undefined" && storedAppts !== "null") {
+      window.HMCDatabase.appointments = JSON.parse(storedAppts);
+    }
+  } catch(e) {
+    console.error("Error parsing stored appointments:", e);
   }
 
   // Bind save buttons
@@ -972,6 +981,135 @@ document.addEventListener("DOMContentLoaded", () => {
   if (andSaveBtn) {
     andSaveBtn.addEventListener("click", () => saveDailyReport('and'));
   }
+
+  // --- Profile Load / Edit Functionality ---
+  function loadPatientProfile() {
+    let profile = {
+      name: "Andrés Mendoza Salgado",
+      phone: "+504 9982-3341",
+      email: "andres.mendoza@gmail.com",
+      address: "Col. Lomas del Guijarro, Tegucigalpa"
+    };
+
+    try {
+      const savedProfile = localStorage.getItem('patientProfile');
+      if (savedProfile && savedProfile !== "undefined" && savedProfile !== "null") {
+        profile = JSON.parse(savedProfile);
+      }
+    } catch(e) {
+      console.error("Error parsing patient profile:", e);
+    }
+
+    // Update input fields
+    const nameInput = document.getElementById("edit-profile-name");
+    const phoneInput = document.getElementById("edit-profile-phone");
+    const emailInput = document.getElementById("edit-profile-email");
+    const addressInput = document.getElementById("edit-profile-address");
+
+    const nameInputAnd = document.getElementById("edit-profile-name-and");
+    const phoneInputAnd = document.getElementById("edit-profile-phone-and");
+    const emailInputAnd = document.getElementById("edit-profile-email-and");
+    const addressInputAnd = document.getElementById("edit-profile-address-and");
+
+    if (nameInput) nameInput.value = profile.name;
+    if (phoneInput) phoneInput.value = profile.phone;
+    if (emailInput) emailInput.value = profile.email;
+    if (addressInput) addressInput.value = profile.address;
+
+    if (nameInputAnd) nameInputAnd.value = profile.name;
+    if (phoneInputAnd) phoneInputAnd.value = profile.phone;
+    if (emailInputAnd) emailInputAnd.value = profile.email;
+    if (addressInputAnd) addressInputAnd.value = profile.address;
+
+    // Update text labels
+    const dashName = document.getElementById("dashboard-patient-name");
+    if (dashName) {
+      if (dashName.id === "dashboard-patient-name" && dashName.tagName === "H2") {
+        if (dashName.textContent.includes("Buenos días") || dashName.textContent.includes("buenos días")) {
+          dashName.textContent = `¡Buenos días ${profile.name.split(" ")[0]}!`;
+        } else {
+          dashName.textContent = profile.name.split(" ")[0] + " " + (profile.name.split(" ")[1] || "");
+        }
+      }
+    }
+    
+    // Set both profile names
+    const fullNameEl = document.getElementById("profile-full-name");
+    if (fullNameEl) fullNameEl.textContent = profile.name;
+    const fullNameElAnd = document.getElementById("profile-full-name-and");
+    if (fullNameElAnd) fullNameElAnd.textContent = profile.name;
+
+    // Load custom profile photo from localStorage
+    const savedPhoto = localStorage.getItem('patientProfilePhoto');
+    if (savedPhoto) {
+      document.querySelectorAll("#patient-avatar, #profile-picture-display, #profile-picture-display-and").forEach(img => {
+        img.src = savedPhoto;
+      });
+    }
+  }
+
+  window.triggerPhotoUpload = function() {
+    const input = document.getElementById("patient-photo-input");
+    if (input) input.click();
+  };
+
+  window.handlePhotoSelected = function(input) {
+    const file = input.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        // Update images in real time
+        document.querySelectorAll("#patient-avatar, #profile-picture-display, #profile-picture-display-and").forEach(img => {
+          img.src = dataUrl;
+        });
+        // Save to localStorage
+        localStorage.setItem('patientProfilePhoto', dataUrl);
+        showToast("📸 Foto de perfil cargada correctamente.", "success");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  window.savePatientProfileChanges = function() {
+    // Determine active profile inputs
+    const profileScreen = document.getElementById("screen-profile");
+    const isAndroid = profileScreen && profileScreen.innerHTML.includes("profile-full-name-and");
+    
+    let name, phone, email, address;
+    // Check if android edit field is rendered & visible
+    const andField = document.getElementById("edit-profile-name-and");
+    if (andField && andField.offsetParent !== null) {
+      name = document.getElementById("edit-profile-name-and").value;
+      phone = document.getElementById("edit-profile-phone-and").value;
+      email = document.getElementById("edit-profile-email-and").value;
+      address = document.getElementById("edit-profile-address-and").value;
+    } else {
+      name = document.getElementById("edit-profile-name").value;
+      phone = document.getElementById("edit-profile-phone").value;
+      email = document.getElementById("edit-profile-email").value;
+      address = document.getElementById("edit-profile-address").value;
+    }
+
+    if (!name || !phone || !email) {
+      showToast("⚠️ Por favor completa los campos requeridos.", "warning");
+      return;
+    }
+
+    const profileData = { name, phone, email, address };
+    localStorage.setItem('patientProfile', JSON.stringify(profileData));
+    
+    // Update local variables and text elements
+    loadPatientProfile();
+
+    showToast("💾 Perfil actualizado con éxito.", "success");
+    setTimeout(() => {
+      showScreen("dashboard");
+    }, 1200);
+  };
+
+  // Load profile data on startup
+  loadPatientProfile();
 
   // Kickstart view
   showScreen("splash");
