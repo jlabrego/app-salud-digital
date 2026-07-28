@@ -10,6 +10,20 @@ document.addEventListener("DOMContentLoaded", () => {
   let isLoggedIn = false;
   let currentTab = "overview";
   let realTimeInterval = null;
+
+  // Patients and Users lists initialized with defaults or localStorage
+  const storedPatients = localStorage.getItem('hmc_patients');
+  let patientsList = storedPatients ? JSON.parse(storedPatients) : [
+    { id: "HMC-98231-AM", name: "Andrés Mendoza Salgado", age: 34, gender: "Masculino", dob: "1992-10-12", phone: "+504 9982-3341", email: "andres.mendoza@gmail.com", address: "Col. Lomas del Guijarro", insurance: "Ficohsa Seguros", blood: "O+", allergies: "Penicilina", condition: "Hipertensión Arterial", avatar: "patient_avatar.png", emgContact: "Gabriela de Mendoza", emgPhone: "+504 9982-3341" },
+    { id: "HMC-77218-CZ", name: "Carmen Elena Zelaya", age: 62, gender: "Femenino", dob: "1964-04-18", phone: "+504 9988-1122", email: "carmen.zelaya@gmail.com", address: "Col. Palmira", insurance: "Seguros Atlántida", blood: "A+", allergies: "Ninguna", condition: "Dolor Torácico", avatar: "doctor_female_profile_2.png", emgContact: "Juan Carlos Zelaya", emgPhone: "+504 9900-1122" }
+  ];
+
+  const storedUsers = localStorage.getItem('hmc_users');
+  let usersList = storedUsers ? JSON.parse(storedUsers) : [
+    { fullname: "Dr. Carlos Valladares", username: "carlos.valladares", email: "carlos.valladares@hmc.com.hn", role: "Doctor", dept: "Cardiología", status: "Activo" },
+    { fullname: "Jessica Abrego", username: "jessica.abrego", email: "admin@hmc.com.hn", role: "Administrator", dept: "Dirección Médica", status: "Activo" }
+  ];
+
   const storedReports = localStorage.getItem('patientDailyReports');
   const initialReports = storedReports ? JSON.parse(storedReports) : (db.patientDailyReports || []);
   let activeKPIValues = {
@@ -86,6 +100,12 @@ document.addEventListener("DOMContentLoaded", () => {
     } else if (tabId === "appointments") {
       stopRealTimeUpdates();
       renderAdminAppointments();
+    } else if (tabId === "patients") {
+      stopRealTimeUpdates();
+      renderPatientsTable();
+    } else if (tabId === "users") {
+      stopRealTimeUpdates();
+      renderUsersTable();
     } else {
       stopRealTimeUpdates();
     }
@@ -697,6 +717,12 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   window.openNewAppointmentModal = function() {
+    const patientSelect = document.getElementById("new-appt-patient");
+    if (patientSelect) {
+      patientSelect.innerHTML = patientsList.map(p => {
+        return `<option value="${p.name}">${p.name} (${p.id})</option>`;
+      }).join("");
+    }
     document.getElementById("new-appt-modal").classList.remove("hidden");
   };
 
@@ -1021,6 +1047,210 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("admin-login-view").classList.remove("hidden");
     
     showToast("🔑 Sesión cerrada correctamente.", "success");
+  };
+
+  // --- Patients Directory rendering ---
+  function renderPatientsTable() {
+    const container = document.getElementById("admin-patients-table-body");
+    if (!container) return;
+
+    container.innerHTML = patientsList.map(p => {
+      let avatarPath = "assets/patient_avatar.png";
+      if (p.avatar) avatarPath = `assets/${p.avatar}`;
+      if (p.name.includes("Carmen")) avatarPath = "assets/doctor_female_profile_2.png";
+      
+      let ageDisplay = p.age ? `${p.age} años` : '';
+      if (!ageDisplay && p.dob) {
+        const birthYear = new Date(p.dob).getFullYear();
+        if (!isNaN(birthYear)) {
+          ageDisplay = `${2026 - birthYear} años`;
+        }
+      }
+      if (!ageDisplay) ageDisplay = 'N/A';
+
+      const condition = p.condition || "Ninguna";
+      let badgeStyle = "background-color:#FFF8E1; color:#E65100;"; // Yellow default
+      if (condition === "Ninguna") {
+        badgeStyle = "background-color:#E8F7F3; color:#0A6D5E;";
+      } else if (condition.includes("Dolor") || condition.includes("Urgencia")) {
+        badgeStyle = "background-color:#FFEBEE; color:#D32F2F;";
+      }
+
+      return `
+        <tr style="border-bottom:1px solid #F1F5F9;">
+          <td style="padding:14px 20px;"><strong>${p.id}</strong></td>
+          <td style="padding:14px 20px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <img src="${avatarPath}" style="width:36px; height:36px; border-radius:50%; border:1px solid #E2E8F0; object-fit:cover;" onerror="this.src='assets/patient_avatar.png'">
+              <span style="font-weight:700; color:#1E293B;">${p.name}</span>
+            </div>
+          </td>
+          <td style="padding:14px 20px; font-weight:500;">${ageDisplay} / ${p.gender}</td>
+          <td style="padding:14px 20px;"><span style="color:#0284C7; font-weight:600;">${p.insurance}</span></td>
+          <td style="padding:14px 20px;"><span style="${badgeStyle} padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">${condition}</span></td>
+          <td style="padding:14px 20px; text-align:center;">
+            <button class="claim-btn view-details ripple-btn" style="border: 1px solid #E2E8F0; background-color:#F8FAFC; color:#64748B; padding:6px; border-radius:8px; width:34px; height:34px; display:inline-flex; align-items:center; justify-content:center;" onclick="showToast('🔍 Ficha de ${p.name}: ID ${p.id}, Tel: ${p.phone}, Alergias: ${p.allergies}', 'success')">
+              <span class="material-symbols-rounded" style="font-size:1.2rem;">visibility</span>
+            </button>
+          </td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  // --- Users Directory rendering ---
+  function renderUsersTable() {
+    const container = document.getElementById("admin-users-table-body");
+    if (!container) return;
+
+    container.innerHTML = usersList.map(u => {
+      let roleDisplay = u.role;
+      if (roleDisplay === "Administrator") roleDisplay = "Administrador Principal";
+      if (roleDisplay === "Doctor") roleDisplay = "Médico Especialista";
+      if (roleDisplay === "Receptionist") roleDisplay = "Recepcionista";
+      if (roleDisplay === "Billing Staff") roleDisplay = "Personal de Facturación";
+
+      const status = u.status || "Activo";
+      const statusStyle = status === "Activo" 
+        ? "background-color:#D1FAE5; color:#059669;" 
+        : "background-color:#F1F5F9; color:#64748B;";
+
+      return `
+        <tr style="border-bottom:1px solid #F1F5F9;">
+          <td style="padding:14px 20px; font-weight:700; color:#1E293B;">
+            <div style="display:flex; flex-direction:column; gap:2px;">
+              <span>${u.fullname}</span>
+              <span style="font-size:0.75rem; color:#94A3B8; font-weight:500;">@${u.username} &bull; ${u.email}</span>
+            </div>
+          </td>
+          <td style="padding:14px 20px; font-weight:600; color:#475569;">${roleDisplay}</td>
+          <td style="padding:14px 20px; color:#64748B; font-weight:500;">${u.dept}</td>
+          <td style="padding:14px 20px;"><span style="${statusStyle} padding:4px 8px; border-radius:6px; font-size:0.75rem; font-weight:700;">${status}</span></td>
+        </tr>
+      `;
+    }).join("");
+  }
+
+  // --- Patient Modal Handlers ---
+  window.openNewPatientModal = function() {
+    document.getElementById("new-patient-modal").classList.remove("hidden");
+  };
+
+  window.closeNewPatientModal = function() {
+    document.getElementById("new-patient-modal").classList.add("hidden");
+    // Clear inputs
+    document.getElementById("new-patient-name").value = "";
+    document.getElementById("new-patient-dni").value = "";
+    document.getElementById("new-patient-dob").value = "";
+    document.getElementById("new-patient-phone").value = "";
+    document.getElementById("new-patient-email").value = "";
+    document.getElementById("new-patient-address").value = "";
+    document.getElementById("new-patient-allergies").value = "";
+    document.getElementById("new-patient-emg-contact").value = "";
+    document.getElementById("new-patient-emg-phone").value = "";
+  };
+
+  window.saveNewPatient = function() {
+    const name = document.getElementById("new-patient-name").value;
+    const dni = document.getElementById("new-patient-dni").value;
+    const dob = document.getElementById("new-patient-dob").value;
+    const gender = document.getElementById("new-patient-gender").value;
+    const phone = document.getElementById("new-patient-phone").value;
+    const email = document.getElementById("new-patient-email").value;
+    const address = document.getElementById("new-patient-address").value;
+    const insurance = document.getElementById("new-patient-insurance").value;
+    const blood = document.getElementById("new-patient-blood").value;
+    const allergies = document.getElementById("new-patient-allergies").value || "Ninguna";
+    const emgContact = document.getElementById("new-patient-emg-contact").value;
+    const emgPhone = document.getElementById("new-patient-emg-phone").value;
+
+    if (!name || !dni || !dob || !phone) {
+      showToast("⚠️ Por favor completa los campos obligatorios del paciente.", "warning");
+      return;
+    }
+
+    // Generate random code ID
+    const randomNum = Math.floor(10000 + Math.random() * 90000);
+    // Initials of name
+    const initials = name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2);
+    const generatedId = `HMC-${randomNum}-${initials}`;
+
+    // Compute age
+    let age = 30;
+    const birthYear = new Date(dob).getFullYear();
+    if (!isNaN(birthYear)) {
+      age = 2026 - birthYear;
+    }
+
+    const newPatient = {
+      id: generatedId,
+      name: name,
+      age: age,
+      gender: gender,
+      dob: dob,
+      phone: phone,
+      email: email,
+      address: address,
+      insurance: insurance,
+      blood: blood,
+      allergies: allergies,
+      condition: "Ninguna",
+      avatar: "patient_avatar.png",
+      emgContact: emgContact,
+      emgPhone: emgPhone
+    };
+
+    patientsList.push(newPatient);
+    localStorage.setItem('hmc_patients', JSON.stringify(patientsList));
+
+    // Re-render
+    renderPatientsTable();
+    closeNewPatientModal();
+    showToast(`🟢 Paciente ${name} registrado correctamente con ID ${generatedId}.`, "success");
+  };
+
+  // --- User Modal Handlers ---
+  window.openNewUserModal = function() {
+    document.getElementById("new-user-modal").classList.remove("hidden");
+  };
+
+  window.closeNewUserModal = function() {
+    document.getElementById("new-user-modal").classList.add("hidden");
+    document.getElementById("new-user-fullname").value = "";
+    document.getElementById("new-user-username").value = "";
+    document.getElementById("new-user-email").value = "";
+    document.getElementById("new-user-dept").value = "";
+  };
+
+  window.saveNewUser = function() {
+    const fullname = document.getElementById("new-user-fullname").value;
+    const username = document.getElementById("new-user-username").value;
+    const email = document.getElementById("new-user-email").value;
+    const role = document.getElementById("new-user-role").value;
+    const dept = document.getElementById("new-user-dept").value;
+    const status = document.getElementById("new-user-status").value;
+
+    if (!fullname || !username || !email) {
+      showToast("⚠️ Por favor completa los campos del usuario.", "warning");
+      return;
+    }
+
+    const newUser = {
+      fullname: fullname,
+      username: username,
+      email: email,
+      role: role,
+      dept: dept,
+      status: status
+    };
+
+    usersList.push(newUser);
+    localStorage.setItem('hmc_users', JSON.stringify(usersList));
+
+    // Re-render
+    renderUsersTable();
+    closeNewUserModal();
+    showToast(`🟢 Cuenta de usuario para ${fullname} creada correctamente.`, "success");
   };
 
   // Initial tab loading
