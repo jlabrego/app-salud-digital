@@ -12,7 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
     "splash", "onboarding", "login", "register", "biometric", "dashboard", 
     "doctor-search", "doctor-profile", "booking-confirm",
     "appointments", "telehealth-waiting", "telehealth-call",
-    "records", "record-detail", "qr-card", "settings", "health-monitoring", "profile"
+    "records", "record-detail", "qr-card", "settings", "health-monitoring", "profile",
+    "messages", "chat-session"
   ];
 
   let currentScreen = "splash";
@@ -34,6 +35,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // Safety release of webcam when leaving call view
     if (currentScreen === "telehealth-call" && screenId !== "telehealth-call") {
       releaseWebcam();
+    }
+
+    // Capture previous screen for back button
+    if (screenId === "messages") {
+      if (currentScreen !== "messages" && currentScreen !== "chat-session") {
+        previousScreenForMessages = currentScreen;
+      }
     }
 
     screens.forEach(s => {
@@ -65,6 +73,10 @@ document.addEventListener("DOMContentLoaded", () => {
       renderAppointments();
     } else if (screenId === "qr-card") {
       initQRCard();
+    } else if (screenId === "messages") {
+      renderConversationsList();
+    } else if (screenId === "chat-session") {
+      renderChatSession();
     }
   }
 
@@ -338,6 +350,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     // select first day
     if (calendarDays.length > 0) calendarDays[0].classList.add("selected");
+
+    // Render Messaging block in doctor profile
+    const msgSection = document.getElementById("doctor-profile-messaging-section");
+    if (msgSection) {
+      const allowedDocs = ["doc-1", "doc-2"];
+      if (allowedDocs.includes(doc.id)) {
+        msgSection.innerHTML = `
+          <button class="onboarding-btn ripple-btn" style="background-color:#E6F6F4; color:#007A64; border:1px solid rgba(0,122,100,0.2); margin-top:10px; width:100%; border-radius:28px;" onclick="openDoctorChatFromProfile('${doc.id}')">
+            <span class="material-symbols-rounded" style="vertical-align:middle; font-size:1.1rem; margin-right:4px;">chat</span> Enviar Mensaje
+          </button>
+        `;
+      } else {
+        msgSection.innerHTML = `
+          <p style="font-size: 0.8rem; color: var(--text-muted); font-style: italic; background-color: #F8FAFC; padding: 12px; border-radius: 12px; border: 1px dashed #E2E8F0; margin-top:10px; text-align:center;">
+            Los mensajes estarán disponibles después de tu primera consulta.
+          </p>
+        `;
+      }
+    }
   }
 
   // Handle Book Action from Profile
@@ -662,15 +693,25 @@ document.addEventListener("DOMContentLoaded", () => {
         container.appendChild(item);
       });
     } else if (filter === "rx") {
-      db.prescriptions.forEach(rx => {
+      const rxList = getPrescriptions();
+      rxList.forEach(rx => {
         const item = document.createElement("div");
         item.className = "record-list-item slide-up";
+        
+        let statusBadge = `<span style="display:inline-block; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.65rem; color: #B45309; background-color: #FEF3C7; margin-left: 8px;">🟡 Pendiente</span>`;
+        if (rx.status === "Enviada a Farmacia") {
+          statusBadge = `<span style="display:inline-block; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.65rem; color: #15803D; background-color: #D1FAE5; margin-left: 8px;">🟢 Enviada a Farmacia</span>`;
+        }
+
         item.innerHTML = `
           <div class="record-meta">
             <span class="material-symbols-rounded icon">receipt_long</span>
             <div>
-              <h4 class="record-title">Receta Electrónica ${rx.code}</h4>
-              <p class="record-subtitle">Dr. Valladares &bull; ${rx.date}</p>
+              <div style="display:flex; align-items:center; flex-wrap:wrap;">
+                <h4 class="record-title" style="margin:0;">Receta Electrónica ${rx.code}</h4>
+                ${statusBadge}
+              </div>
+              <p class="record-subtitle" style="margin-top:2px;">Dr. Valladares &bull; ${rx.date}</p>
             </div>
           </div>
           <span class="material-symbols-rounded chevron">chevron_right</span>
@@ -762,9 +803,15 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("detail-subtitle").innerText = `Fecha de emisión: ${rx.date}`;
 
     const content = document.getElementById("detail-dynamic-content");
+    
+    let statusBadge = `<span style="display:inline-block; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.68rem; color: #B45309; background-color: #FEF3C7;">🟡 Pendiente</span>`;
+    if (rx.status === "Enviada a Farmacia") {
+      statusBadge = `<span style="display:inline-block; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.68rem; color: #15803D; background-color: #D1FAE5;">🟢 Enviada a Farmacia</span>`;
+    }
+
     content.innerHTML = `
       <div class="prescription-card-detail">
-        <div class="rx-card-header">
+        <div class="rx-card-header" style="margin-bottom:12px;">
           <div class="hospital-stamp">
             <span class="material-symbols-rounded">medical_services</span>
             <strong>HMC Connect</strong>
@@ -774,6 +821,15 @@ document.addEventListener("DOMContentLoaded", () => {
             <span>${rx.specialty}</span>
           </div>
         </div>
+
+        <!-- Prescription Delivery Details -->
+        <div style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:12px; font-size:0.8rem; text-align:left; margin-bottom:12px; display:flex; flex-direction:column; gap:4px; font-family:var(--font-roboto);">
+          <div><strong>Estado:</strong> ${statusBadge}</div>
+          <div><strong>Farmacia destino:</strong> ${rx.farmaciaDestino || 'Honduras Medical Center Pharmacy'}</div>
+          <div><strong>Fecha de envío:</strong> ${rx.dateSent || 'Pendiente de envío'}</div>
+          <div><strong>Referencia:</strong> ${rx.refNum || 'RX-2026-000145'}</div>
+        </div>
+
         <div class="rx-meds-list">
           ${rx.medications.map(m => `
             <div class="rx-med-item">
@@ -935,6 +991,85 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Save to localStorage
     localStorage.setItem('patientDailyReports', JSON.stringify(window.HMCDatabase.patientDailyReports));
+
+    // Sincronizar automonitoreo con mensajes de chat (médico Carlos Valladares - doc-1)
+    try {
+      const chatDb = localStorage.getItem('hmc_chats');
+      let currentChats = chatDb ? JSON.parse(chatDb) : db.chats;
+      
+      if (!currentChats["doc-1"]) {
+        currentChats["doc-1"] = [];
+      }
+
+      currentChats["doc-1"].push({
+        sender: "system",
+        text: `🤖 [Mensaje Automático]: Reporte diario de salud enviado correctamente a las ${formattedTime}.`,
+        time: `${formattedDate} ${formattedTime}`
+      });
+
+      // Check if pressure is elevated
+      let isElevated = false;
+      const bpParts = bp.split("/");
+      if (bpParts.length === 2) {
+        const sys = parseInt(bpParts[0]);
+        const dia = parseInt(bpParts[1]);
+        if (sys > 135 || dia > 85) {
+          isElevated = true;
+        }
+      }
+
+      if (isElevated) {
+        currentChats["doc-1"].push({
+          sender: "system",
+          text: `⚠️ [Alerta Médica]: Se detectó una presión arterial elevada (${bp} mmHg). El Dr. Carlos Valladares ha sido notificado para seguimiento.`,
+          time: `${formattedDate} ${formattedTime}`
+        });
+
+        // Simular respuesta del doctor en 4 segundos
+        setTimeout(() => {
+          try {
+            const reloadedChats = JSON.parse(localStorage.getItem('hmc_chats')) || db.chats;
+            reloadedChats["doc-1"].push({
+              sender: "doctor",
+              text: `Hola Andrés, acabo de revisar tu reporte con la presión en ${bp} mmHg. ¿Has tenido dolor de cabeza o zumbidos en los oídos? Por favor toma tu Losartán y descansa.`,
+              time: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            });
+            localStorage.setItem('hmc_chats', JSON.stringify(reloadedChats));
+            showToast("💬 Nuevo mensaje de tu médico en tu chat de seguimiento.", "success");
+            
+            if (currentScreen === "chat-session" && activeDoctorChatId === "doc-1") {
+              renderChatSessionMessages("doc-1");
+            }
+          } catch(err) {
+            console.error(err);
+          }
+        }, 4000);
+      } else {
+        // Normal report automatic response after 5 seconds
+        setTimeout(() => {
+          try {
+            const reloadedChats = JSON.parse(localStorage.getItem('hmc_chats')) || db.chats;
+            reloadedChats["doc-1"].push({
+              sender: "doctor",
+              text: `Hola Andrés, tu reporte de hoy muestra signos normales (Presión ${bp}, Ritmo ${hr} lpm). Excelente adherencia. Continúa con tu tratamiento diario.`,
+              time: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            });
+            localStorage.setItem('hmc_chats', JSON.stringify(reloadedChats));
+            showToast("💬 Tu médico ha enviado una recomendación sobre tu reporte.", "success");
+            
+            if (currentScreen === "chat-session" && activeDoctorChatId === "doc-1") {
+              renderChatSessionMessages("doc-1");
+            }
+          } catch(err) {
+            console.error(err);
+          }
+        }, 5000);
+      }
+
+      localStorage.setItem('hmc_chats', JSON.stringify(currentChats));
+    } catch(e) {
+      console.error(e);
+    }
 
     // Show Toast Success
     showToast("📋 Reporte diario de salud guardado con éxito.", "success");
@@ -1107,6 +1242,349 @@ document.addEventListener("DOMContentLoaded", () => {
       showScreen("dashboard");
     }, 1200);
   };
+
+  // --- Secure Messaging Feature ---
+  let activeDoctorChatId = "doc-1";
+  let previousScreenForMessages = "dashboard";
+
+  // Initialize chats in localStorage if not exists or if invalid
+  try {
+    const rawChats = localStorage.getItem('hmc_chats');
+    if (!rawChats || rawChats === "undefined" || rawChats === "null" || rawChats === "{}") {
+      localStorage.setItem('hmc_chats', JSON.stringify(db.chats));
+    }
+  } catch(e) {
+    console.error("Error initializing hmc_chats:", e);
+    localStorage.setItem('hmc_chats', JSON.stringify(db.chats));
+  }
+
+  function getChats() {
+    try {
+      const raw = localStorage.getItem('hmc_chats');
+      if (!raw || raw === "undefined" || raw === "null" || raw === "{}") {
+        return db.chats;
+      }
+      const parsed = JSON.parse(raw);
+      if (!parsed || Object.keys(parsed).length === 0) {
+        return db.chats;
+      }
+      return parsed;
+    } catch(e) {
+      console.error("Error loading chats from storage, falling back to mockData:", e);
+      return db.chats;
+    }
+  }
+
+  window.goBackFromMessages = function() {
+    showScreen(previousScreenForMessages);
+  };
+
+  window.goBackToMessages = function() {
+    showScreen("messages");
+  };
+
+  window.openDoctorChatFromProfile = function(docId) {
+    activeDoctorChatId = docId;
+    showScreen("chat-session");
+  };
+
+  function renderConversationsList() {
+    const listContainer = document.getElementById("messages-conversations-list");
+    const emptyState = document.getElementById("messages-empty-state");
+    if (!listContainer) return;
+
+    listContainer.innerHTML = "";
+    
+    // We only display the conversations with doctor Carlos Valladares (doc-1) and Sofia Murillo (doc-2)
+    const activeChats = getChats();
+    const chatKeys = Object.keys(activeChats);
+
+    if (chatKeys.length === 0) {
+      if (emptyState) emptyState.classList.remove("hidden");
+      return;
+    }
+
+    let renderedCount = 0;
+    chatKeys.forEach(docId => {
+      const messages = activeChats[docId];
+      if (!messages || messages.length === 0) return;
+      renderedCount++;
+
+      const lastMsg = messages[messages.length - 1];
+      
+      // Get doctor details
+      let docName = "Dra. Sofía Murillo";
+      let docSpecialty = "Dermatología";
+      let docAvatar = "doctor_female_profile_2.png";
+      
+      if (docId === "doc-1") {
+        docName = "Dr. Carlos Valladares";
+        docSpecialty = "Cardiología";
+        docAvatar = "doctor_male_profile.png";
+      }
+
+      // Format time
+      let lastTime = "09:30 AM";
+      if (lastMsg.time) {
+        const parts = lastMsg.time.split(" ");
+        lastTime = parts.length > 1 ? parts[parts.length - 2] + " " + (parts[parts.length - 1] || "") : lastMsg.time;
+      }
+
+      const card = document.createElement("div");
+      card.className = "settings-item ripple-btn slide-up";
+      card.style.cssText = "flex-direction: row; justify-content: flex-start; gap: 12px; padding: 14px; background: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 16px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.015); margin-bottom: 2px; align-items: center;";
+      card.innerHTML = `
+        <img src="assets/${docAvatar}" style="width: 44px; height: 44px; border-radius: 50%; border: 1px solid #E2E8F0; object-fit: cover;">
+        <div style="flex: 1; text-align: left; display: flex; flex-direction: column; gap: 2px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h4 style="font-size: 0.88rem; font-weight: 800; color: var(--text-dark); margin: 0;">${docName}</h4>
+            <span style="font-size: 0.68rem; color: var(--text-muted); font-weight: 500;">${lastTime}</span>
+          </div>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 0.72rem; color: var(--primary); font-weight: 700;">${docSpecialty} &bull; Caso en seguimiento</span>
+          </div>
+          <p style="font-size: 0.78rem; color: var(--text-muted); margin: 2px 0 0 0; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; max-width: 200px;">
+            ${lastMsg.text.startsWith("🤖") || lastMsg.text.startsWith("⚠️") ? lastMsg.text.substring(4) : lastMsg.text}
+          </p>
+        </div>
+        <span class="material-symbols-rounded" style="color:var(--text-muted); font-size: 1.1rem; margin-left: 4px;">chevron_right</span>
+      `;
+
+      card.addEventListener("click", () => {
+        activeDoctorChatId = docId;
+        showScreen("chat-session");
+      });
+
+      listContainer.appendChild(card);
+    });
+
+    if (renderedCount === 0) {
+      if (emptyState) emptyState.classList.remove("hidden");
+    } else {
+      if (emptyState) emptyState.classList.add("hidden");
+    }
+  }
+
+  function renderChatSession() {
+    const chatTitle = document.getElementById("chat-doctor-name");
+    const chatAvatar = document.getElementById("chat-doctor-avatar");
+    
+    let docName = "Dra. Sofía Murillo";
+    let docAvatar = "doctor_female_profile_2.png";
+    if (activeDoctorChatId === "doc-1") {
+      docName = "Dr. Carlos Valladares";
+      docAvatar = "doctor_male_profile.png";
+    }
+
+    if (chatTitle) chatTitle.innerText = docName;
+    if (chatAvatar) chatAvatar.src = `assets/${docAvatar}`;
+
+    // Populate Report Overlay details from latest patient report
+    populateChatReportOverlay();
+
+    // Render messages stream
+    renderChatSessionMessages(activeDoctorChatId);
+    
+    // Hide overlay by default
+    const overlay = document.getElementById("chat-report-overlay");
+    if (overlay) overlay.classList.add("hidden");
+  }
+
+  function populateChatReportOverlay() {
+    const reportDate = document.getElementById("chat-report-date");
+    const reportBp = document.getElementById("chat-report-bp");
+    const reportHr = document.getElementById("chat-report-hr");
+    const reportTemp = document.getElementById("chat-report-temp");
+    const reportPain = document.getElementById("chat-report-pain");
+    const reportMood = document.getElementById("chat-report-mood");
+    const reportAdherence = document.getElementById("chat-report-adherence");
+
+    const reports = JSON.parse(localStorage.getItem('patientDailyReports')) || db.patientDailyReports || [];
+    if (reports.length > 0) {
+      const rep = reports[0];
+      if (reportDate) reportDate.innerText = `Reporte: ${rep.date} a las ${rep.time}`;
+      if (reportBp) reportBp.innerText = `${rep.bloodPressure} mmHg`;
+      if (reportHr) reportHr.innerText = `${rep.heartRate} lpm`;
+      if (reportTemp) reportTemp.innerText = `${rep.temperature} °C`;
+      if (reportPain) reportPain.innerText = `${rep.painScale} / 10`;
+      if (reportMood) reportMood.innerText = rep.mood;
+      if (reportAdherence) reportAdherence.innerText = rep.medicationAdherence;
+    } else {
+      if (reportDate) reportDate.innerText = "Sin reportes hoy";
+      if (reportBp) reportBp.innerText = "--";
+      if (reportHr) reportHr.innerText = "--";
+      if (reportTemp) reportTemp.innerText = "--";
+      if (reportPain) reportPain.innerText = "--";
+      if (reportMood) reportMood.innerText = "--";
+      if (reportAdherence) reportAdherence.innerText = "--";
+    }
+  }
+
+  window.toggleChatReportOverlay = function() {
+    const overlay = document.getElementById("chat-report-overlay");
+    if (overlay) {
+      overlay.classList.toggle("hidden");
+    }
+  };
+
+  function renderChatSessionMessages(docId) {
+    const container = document.getElementById("chat-messages-stream");
+    if (!container) return;
+
+    container.innerHTML = "";
+    const activeChats = getChats();
+    const messages = activeChats[docId] || [];
+
+    // Add initial date separator
+    const dateSep = document.createElement("div");
+    dateSep.className = "chat-date-separator";
+    dateSep.innerText = "Canal Seguro HMC";
+    container.appendChild(dateSep);
+
+    messages.forEach(msg => {
+      const bubble = document.createElement("div");
+      
+      // Style categories: doctor, patient, system
+      if (msg.sender === "system") {
+        bubble.className = "chat-bubble system";
+        bubble.innerHTML = `<span>${msg.text}</span>`;
+      } else {
+        const isPatient = msg.sender === "patient";
+        bubble.className = `chat-bubble ${isPatient ? 'patient' : 'doctor'}`;
+        
+        let msgContent = msg.text;
+        // Detect simulated attachments
+        if (msg.isAttachment) {
+          const isDoc = msg.attachType === 'doc';
+          msgContent = `
+            <div class="chat-attach-badge">
+              <span class="material-symbols-rounded">${isDoc ? 'picture_as_pdf' : 'image'}</span>
+              <span>${msg.text}</span>
+            </div>
+          `;
+        }
+
+        // Format time
+        let msgTime = "09:30 AM";
+        if (msg.time) {
+          const parts = msg.time.split(" ");
+          msgTime = parts.length > 1 ? parts[parts.length - 2] + " " + (parts[parts.length - 1] || "") : msg.time;
+        }
+
+        bubble.innerHTML = `
+          <span>${msgContent}</span>
+          <span class="chat-time">${msgTime}</span>
+        `;
+      }
+      container.appendChild(bubble);
+    });
+
+    // Auto scroll to bottom
+    setTimeout(() => {
+      container.scrollTop = container.scrollHeight;
+    }, 50);
+  }
+
+  window.sendChatMessage = function() {
+    const input = document.getElementById("chat-message-input");
+    if (!input) return;
+
+    const val = input.value.trim();
+    if (!val) return;
+
+    const activeChats = getChats();
+    const today = new Date();
+    const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const formattedTime = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const newMsg = {
+      sender: "patient",
+      text: val,
+      time: `${formattedDate} ${formattedTime}`
+    };
+
+    if (!activeChats[activeDoctorChatId]) {
+      activeChats[activeDoctorChatId] = [];
+    }
+    activeChats[activeDoctorChatId].push(newMsg);
+
+    localStorage.setItem('hmc_chats', JSON.stringify(activeChats));
+    input.value = "";
+
+    // Refresh messages stream
+    renderChatSessionMessages(activeDoctorChatId);
+  };
+
+  window.simulateAttachFile = function(type) {
+    const activeChats = getChats();
+    const today = new Date();
+    const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const formattedTime = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    let attachName = type === 'doc' ? "informe_laboratorio_perfil_lipidico.pdf" : "foto_sintomas_alergicos_presion.png";
+    const newMsg = {
+      sender: "patient",
+      text: attachName,
+      time: `${formattedDate} ${formattedTime}`,
+      isAttachment: true,
+      attachType: type
+    };
+
+    if (!activeChats[activeDoctorChatId]) {
+      activeChats[activeDoctorChatId] = [];
+    }
+    activeChats[activeDoctorChatId].push(newMsg);
+
+    localStorage.setItem('hmc_chats', JSON.stringify(activeChats));
+    showToast(`📎 Archivo ${attachName} adjuntado (simulación de envío).`, "success");
+    renderChatSessionMessages(activeDoctorChatId);
+  };
+
+  // --- E-Prescription Delivery to Pharmacy ---
+  if (!localStorage.getItem('hmc_prescriptions')) {
+    localStorage.setItem('hmc_prescriptions', JSON.stringify(db.prescriptions));
+  }
+
+  function getPrescriptions() {
+    try {
+      const raw = localStorage.getItem('hmc_prescriptions');
+      if (!raw || raw === "undefined" || raw === "null" || raw === "[]") {
+        return db.prescriptions;
+      }
+      return JSON.parse(raw);
+    } catch(e) {
+      console.error("Error reading hmc_prescriptions:", e);
+      return db.prescriptions;
+    }
+  }
+
+  // Prototype Cross-Application Synchronization notification trigger
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'hmc_prescriptions') {
+      try {
+        const oldList = e.oldValue ? JSON.parse(e.oldValue) : [];
+        const newList = e.newValue ? JSON.parse(e.newValue) : [];
+        
+        newList.forEach(newRx => {
+          const oldRx = oldList.find(item => item.id === newRx.id);
+          // If the prescription status changed from Pending to Sent to Pharmacy
+          if (newRx.status === "Enviada a Farmacia" && (!oldRx || oldRx.status === "Pendiente")) {
+            showToast("Your electronic prescription has been successfully sent to the HMC Pharmacy.", "success");
+            
+            // Re-render records if current screen is records with active filter rx
+            if (currentScreen === "records") {
+              const activeFilter = document.querySelector(".records-tab-btn.active");
+              if (activeFilter && activeFilter.dataset.filter === "rx") {
+                renderMedicalRecords("rx");
+              }
+            }
+          }
+        });
+      } catch(err) {
+        console.error("Error processing cross-app prescription sync:", err);
+      }
+    }
+  });
 
   // Load profile data on startup
   loadPatientProfile();

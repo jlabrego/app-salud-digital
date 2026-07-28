@@ -238,6 +238,10 @@ const HMCDatabase = {
       specialty: "Cardiología",
       code: "RX-2026-9812",
       active: true,
+      status: "Enviada a Farmacia",
+      farmaciaDestino: "Honduras Medical Center Pharmacy",
+      dateSent: "2026-05-15",
+      refNum: "RX-2026-000098",
       medications: [
         { name: "Losartán Potásico", dosage: "50 mg", instructions: "1 tableta por vía oral cada mañana por 90 días.", quantity: 90 },
         { name: "Aspirina Prevent", dosage: "81 mg", instructions: "1 tableta al día después del almuerzo por 90 días.", quantity: 90 }

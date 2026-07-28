@@ -373,3 +373,93 @@ a {
   margin-top: 24px;
   font-weight: 500;
 }
+
+/* Secure Chat & Messaging Styles */
+.chat-bubble {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  margin-bottom: 2px;
+  word-wrap: break-word;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-bubble.doctor {
+  align-self: flex-start;
+  background-color: #E2E8F0;
+  color: #1E293B;
+  border-bottom-left-radius: 4px;
+  text-align: left;
+}
+
+.chat-bubble.patient {
+  align-self: flex-end;
+  background-color: var(--primary);
+  color: #FFFFFF;
+  border-bottom-right-radius: 4px;
+  text-align: left;
+}
+
+.chat-bubble.system {
+  align-self: center;
+  max-width: 90%;
+  background-color: #FEF3C7;
+  color: #B45309;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 6px 12px;
+  text-align: center;
+  border: 1px solid #FDE68A;
+}
+
+.chat-time {
+  font-size: 0.65rem;
+  opacity: 0.7;
+  align-self: flex-end;
+  margin-top: 2px;
+}
+
+.chat-bubble.patient .chat-time {
+  color: #E6F6F4;
+}
+
+.chat-bubble.doctor .chat-time {
+  color: #64748B;
+}
+
+.chat-attach-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0,0,0,0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 4px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.chat-bubble.patient .chat-attach-badge {
+  background: rgba(255,255,255,0.18);
+  color: #FFFFFF;
+}
+
+.chat-date-separator {
+  align-self: center;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  margin: 12px 0 4px 0;
+  background-color: #FFFFFF;
+  padding: 4px 10px;
+  border-radius: 20px;
+  border: 1px solid #E2E8F0;
+}

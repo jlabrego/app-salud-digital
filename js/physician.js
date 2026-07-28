@@ -60,18 +60,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const dashboardView = document.getElementById("portal-view-dashboard");
     const consultView = document.getElementById("portal-view-consult");
+    const messagesView = document.getElementById("portal-view-messages");
 
     if (tabId === "dashboard") {
-      dashboardView.classList.remove("hidden");
-      consultView.classList.add("hidden");
+      if (dashboardView) dashboardView.classList.remove("hidden");
+      if (consultView) consultView.classList.add("hidden");
+      if (messagesView) messagesView.classList.add("hidden");
       
       // Stop video camera when leaving consult room
       releaseWebcam();
       renderQueue();
     } else if (tabId === "consult") {
-      dashboardView.classList.add("hidden");
-      consultView.classList.remove("hidden");
+      if (dashboardView) dashboardView.classList.add("hidden");
+      if (consultView) consultView.classList.remove("hidden");
+      if (messagesView) messagesView.classList.add("hidden");
       initConsultation();
+    } else if (tabId === "messages") {
+      if (dashboardView) dashboardView.classList.add("hidden");
+      if (consultView) consultView.classList.add("hidden");
+      if (messagesView) messagesView.classList.remove("hidden");
+      releaseWebcam();
+      renderDoctorMessagesPage();
     }
   }
 
@@ -532,26 +541,35 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       setTimeout(() => {
-        overlay.remove();
-        // Add to database mock
-        db.prescriptions.unshift({
+        if (overlay) overlay.remove();
+        
+        const newRx = {
           id: `rx-${Date.now()}`,
           date: getFormattedDate(),
           doctorName: "Dr. Carlos Valladares",
           specialty: "Cardiología",
           code: rxNum,
           active: true,
+          status: "Pendiente",
           medications: prescriptionDraft.map(m => ({
             name: m.name,
             dosage: m.dose,
             instructions: m.instr,
             quantity: 90
           }))
-        });
+        };
+
+        const prescriptionsList = getPrescriptions();
+        prescriptionsList.unshift(newRx);
+        localStorage.setItem('hmc_prescriptions', JSON.stringify(prescriptionsList));
+        db.prescriptions = prescriptionsList;
 
         showToast("💊 Receta firmada digitalmente y enviada al paciente.", "pill");
         prescriptionDraft = [];
         renderPrescriptionDraft();
+
+        // Render the active signed prescription panel on the physician portal
+        renderActivePrescriptionPanel(newRx);
       }, 1000);
     };
   }
@@ -712,6 +730,420 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("physician-login-view").classList.remove("hidden");
     
     showToast("🔑 Sesión cerrada correctamente.", "success");
+  };
+
+  // --- Secure Messaging Feature ---
+  let activePatientChatId = "doc-1"; // 'doc-1' = Andres Mendoza, 'doc-2' = Carmen Elena Zelaya
+
+  // Default chats list
+  if (!localStorage.getItem('hmc_chats')) {
+    localStorage.setItem('hmc_chats', JSON.stringify(db.chats));
+  }
+
+  function getChats() {
+    try {
+      return JSON.parse(localStorage.getItem('hmc_chats')) || db.chats;
+    } catch(e) {
+      console.error(e);
+      return db.chats;
+    }
+  }
+
+  window.doctorOpenPatientEMR = function() {
+    const patientName = activePatientChatId === "doc-1" ? "Andrés Mendoza Salgado" : "Carmen Elena Zelaya";
+    const patientObj = db.doctorQueue.find(p => p.patientName === patientName) || db.doctorQueue[0];
+    
+    activeConsultPatient = patientObj;
+    switchTab("consult");
+    showToast(`📁 Expediente clínico de ${patientName} abierto desde el chat de seguimiento.`, "success");
+  };
+
+  window.doctorSendChatMessage = function() {
+    const input = document.getElementById("doctor-message-input");
+    if (!input) return;
+
+    const val = input.value.trim();
+    if (!val) return;
+
+    const activeChats = getChats();
+    const today = new Date();
+    const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const formattedTime = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const newMsg = {
+      sender: "doctor",
+      text: val,
+      time: `${formattedDate} ${formattedTime}`
+    };
+
+    if (!activeChats[activePatientChatId]) {
+      activeChats[activePatientChatId] = [];
+    }
+    activeChats[activePatientChatId].push(newMsg);
+
+    localStorage.setItem('hmc_chats', JSON.stringify(activeChats));
+    input.value = "";
+
+    // Refresh messages stream
+    renderDoctorActiveChat();
+  };
+
+  window.doctorSimulateAttach = function(type) {
+    const activeChats = getChats();
+    const today = new Date();
+    const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    const formattedTime = today.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    let attachName = type === 'doc' ? "recomendacion_farmacologica_losartan.pdf" : "esquema_toma_medicacion.png";
+    const newMsg = {
+      sender: "doctor",
+      text: attachName,
+      time: `${formattedDate} ${formattedTime}`,
+      isAttachment: true,
+      attachType: type
+    };
+
+    if (!activeChats[activePatientChatId]) {
+      activeChats[activePatientChatId] = [];
+    }
+    activeChats[activePatientChatId].push(newMsg);
+
+    localStorage.setItem('hmc_chats', JSON.stringify(activeChats));
+    showToast(`📎 Archivo ${attachName} enviado al paciente.`, "success");
+    renderDoctorActiveChat();
+  };
+
+  function renderDoctorMessagesPage() {
+    renderDoctorChatsList();
+    renderDoctorActiveChat();
+  }
+
+  function renderDoctorChatsList() {
+    const container = document.getElementById("doctor-chats-list");
+    if (!container) return;
+
+    container.innerHTML = "";
+    const activeChats = getChats();
+
+    const patients = [
+      { id: "doc-1", name: "Andrés Mendoza Salgado", avatar: "patient_avatar.png", diagnosis: "Hipertensión Arterial Esencial", age: 34, gender: "Masculino" },
+      { id: "doc-2", name: "Carmen Elena Zelaya", avatar: "doctor_female_profile_2.png", diagnosis: "Dolor Torácico de Esfuerzo", age: 62, gender: "Femenino" }
+    ];
+
+    patients.forEach(p => {
+      const messages = activeChats[p.id] || [];
+      const lastMsg = messages[messages.length - 1] || { text: "Sin mensajes", time: "" };
+
+      // Format time
+      let lastTime = "09:30 AM";
+      if (lastMsg.time) {
+        const parts = lastMsg.time.split(" ");
+        lastTime = parts.length > 1 ? parts[parts.length - 2] + " " + (parts[parts.length - 1] || "") : lastMsg.time;
+      }
+
+      const activeClass = p.id === activePatientChatId ? "background-color: #E6F6F4; border-left: 4px solid var(--primary);" : "background-color: #FFFFFF;";
+      const item = document.createElement("div");
+      item.style.cssText = `display:flex; align-items:center; gap:10px; padding:12px; border-radius:10px; cursor:pointer; border-bottom:1px solid #F1F5F9; transition:all 0.2s; ${activeClass}`;
+      item.innerHTML = `
+        <img src="assets/${p.avatar}" style="width:38px; height:38px; border-radius:50%; object-fit:cover; border:1px solid #E2E8F0;">
+        <div style="flex:1; text-align:left; overflow:hidden;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2px;">
+            <strong style="font-size:0.82rem; color:#1E293B;">${p.name}</strong>
+            <span style="font-size:0.65rem; color:#94A3B8;">${lastTime}</span>
+          </div>
+          <span style="font-size:0.68rem; color:var(--primary); font-weight:700;">Seguimiento activo</span>
+          <p style="font-size:0.75rem; color:#64748B; margin:2px 0 0 0; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">
+            ${lastMsg.text.startsWith("🤖") || lastMsg.text.startsWith("⚠️") ? lastMsg.text.substring(4) : lastMsg.text}
+          </p>
+        </div>
+      `;
+
+      item.onclick = () => {
+        activePatientChatId = p.id;
+        renderDoctorMessagesPage();
+      };
+
+      container.appendChild(item);
+    });
+  }
+
+  function renderDoctorActiveChat() {
+    // Populate Patient Info Panels
+    const patientName = document.getElementById("doctor-active-patient-name");
+    const patientAvatar = document.getElementById("doctor-active-patient-avatar");
+    const ctxName = document.getElementById("doctor-context-patient-name");
+    const ctxAge = document.getElementById("doctor-context-patient-age");
+    const ctxDiag = document.getElementById("doctor-context-patient-diag");
+    const ctxReportStatus = document.getElementById("doctor-context-patient-report-status");
+
+    let pName = "Andrés Mendoza Salgado";
+    let pAvatar = "patient_avatar.png";
+    let pAgeGender = "34 años / Masculino";
+    let pDiag = "Hipertensión Arterial Esencial";
+
+    if (activePatientChatId === "doc-2") {
+      pName = "Carmen Elena Zelaya";
+      pAvatar = "doctor_female_profile_2.png";
+      pAgeGender = "62 años / Femenino";
+      pDiag = "Dolor Torácico de Esfuerzo";
+    }
+
+    if (patientName) patientName.innerText = pName;
+    if (patientAvatar) patientAvatar.src = `assets/${pAvatar}`;
+    if (ctxName) ctxName.innerText = pName;
+    if (ctxAge) ctxAge.innerText = pAgeGender;
+    if (ctxDiag) {
+      ctxDiag.innerText = pDiag;
+      ctxDiag.style.backgroundColor = pDiag.includes("Hipertensión") ? "#FFF8E1" : "#FFEBEE";
+      ctxDiag.style.color = pDiag.includes("Hipertensión") ? "#B45309" : "#D32F2F";
+    }
+
+    // Populate messages stream
+    const container = document.getElementById("doctor-messages-stream");
+    if (container) {
+      container.innerHTML = "";
+      const activeChats = getChats();
+      const messages = activeChats[activePatientChatId] || [];
+
+      // Add initial date separator
+      const dateSep = document.createElement("div");
+      dateSep.className = "chat-date-separator";
+      dateSep.innerText = "Canal Seguro HMC";
+      container.appendChild(dateSep);
+
+      messages.forEach(msg => {
+        const bubble = document.createElement("div");
+        if (msg.sender === "system") {
+          bubble.className = "chat-bubble system";
+          bubble.innerHTML = `<span>${msg.text}</span>`;
+        } else {
+          const isDoctor = msg.sender === "doctor";
+          bubble.className = `chat-bubble ${isDoctor ? 'patient' : 'doctor'}`; // Swap styling visually (doctor is local sender here)
+          
+          let msgContent = msg.text;
+          if (msg.isAttachment) {
+            msgContent = `
+              <div class="chat-attach-badge">
+                <span class="material-symbols-rounded">${msg.attachType === 'doc' ? 'picture_as_pdf' : 'image'}</span>
+                <span>${msg.text}</span>
+              </div>
+            `;
+          }
+
+          let msgTime = "09:30 AM";
+          if (msg.time) {
+            const parts = msg.time.split(" ");
+            msgTime = parts.length > 1 ? parts[parts.length - 2] + " " + (parts[parts.length - 1] || "") : msg.time;
+          }
+
+          bubble.innerHTML = `
+            <span>${msgContent}</span>
+            <span class="chat-time">${msgTime}</span>
+          `;
+        }
+        container.appendChild(bubble);
+      });
+
+      // Scroll to bottom
+      setTimeout(() => {
+        container.scrollTop = container.scrollHeight;
+      }, 50);
+    }
+
+    // Render clinical report details in context card
+    const reportContainer = document.getElementById("doctor-context-report-container");
+    if (reportContainer) {
+      reportContainer.innerHTML = "";
+      
+      if (activePatientChatId === "doc-1") {
+        // Read actual localStorage patientDailyReports
+        const reports = JSON.parse(localStorage.getItem('patientDailyReports')) || db.patientDailyReports || [];
+        if (reports.length > 0) {
+          const rep = reports[0];
+          
+          // Determine status label color
+          const isNormal = rep.temperature <= 37.5 && rep.heartRate <= 85;
+          if (ctxReportStatus) {
+            ctxReportStatus.innerText = isNormal ? "Normal" : "Alerta";
+            ctxReportStatus.style.backgroundColor = isNormal ? "#D1FAE5" : "#FFEBEE";
+            ctxReportStatus.style.color = isNormal ? "#065F46" : "#D32F2F";
+          }
+
+          reportContainer.innerHTML = `
+            <div style="font-size: 0.72rem; color: #64748B; margin-bottom: 2px;">Reportado: ${rep.date} ${rep.time}</div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.75rem;">
+              <div>Presión: <strong>${rep.bloodPressure} mmHg</strong></div>
+              <div>Pulso: <strong>${rep.heartRate} lpm</strong></div>
+              <div>Temp: <strong>${rep.temperature} °C</strong></div>
+              <div>SpO2: <strong>${rep.oxygenSaturation}%</strong></div>
+              <div>Dolor: <strong>${rep.painScale}/10</strong></div>
+              <div>Ánimo: <strong>${rep.mood.split(" ")[1] || rep.mood}</strong></div>
+            </div>
+            <div style="font-size:0.72rem; background-color:#F8FAFC; padding:6px; border-radius:6px; border-left:2px solid var(--primary); margin-top:4px; font-style:italic; color:#475569;">
+              "${rep.notes}"
+            </div>
+          `;
+        } else {
+          if (ctxReportStatus) ctxReportStatus.innerText = "Sin reportes";
+          reportContainer.innerHTML = `<span style="font-size:0.75rem; color:#94A3B8; font-style:italic;">No hay reportes clínicos registrados hoy.</span>`;
+        }
+      } else {
+        // Carmen Elena Zelaya static clinical context report
+        if (ctxReportStatus) {
+          ctxReportStatus.innerText = "Alerta";
+          ctxReportStatus.style.backgroundColor = "#FFEBEE";
+          ctxReportStatus.style.color = "#D32F2F";
+        }
+        reportContainer.innerHTML = `
+          <div style="font-size: 0.72rem; color: #64748B; margin-bottom: 2px;">Reportado: Hace 1 hora</div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; font-size:0.75rem;">
+            <div>Presión: <strong style="color:#D32F2F;">135/88 mmHg</strong></div>
+            <div>Pulso: <strong style="color:#D32F2F;">91 lpm</strong></div>
+            <div>Temp: <strong>36.7 °C</strong></div>
+            <div>SpO2: <strong>96%</strong></div>
+            <div>Dolor: <strong style="color:#D32F2F;">5/10</strong></div>
+            <div>Ánimo: <strong>Preocupado</strong></div>
+          </div>
+          <div style="font-size:0.72rem; background-color:#F8FAFC; padding:6px; border-radius:6px; border-left:2px solid var(--danger-red); margin-top:4px; font-style:italic; color:#475569;">
+            "Siento un leve dolor opresivo en el pecho después de caminar en la banda."
+          </div>
+        `;
+      }
+    }
+  }
+
+  // --- E-Prescription Delivery to Pharmacy ---
+  if (!localStorage.getItem('hmc_prescriptions')) {
+    localStorage.setItem('hmc_prescriptions', JSON.stringify(db.prescriptions));
+  }
+
+  function getPrescriptions() {
+    try {
+      const raw = localStorage.getItem('hmc_prescriptions');
+      if (!raw || raw === "undefined" || raw === "null" || raw === "[]") {
+        return db.prescriptions;
+      }
+      return JSON.parse(raw);
+    } catch(e) {
+      console.error("Error reading hmc_prescriptions:", e);
+      return db.prescriptions;
+    }
+  }
+
+  window.renderActivePrescriptionPanel = function(rx) {
+    const container = document.getElementById("active-prescription-container");
+    if (!container) return;
+
+    container.classList.remove("hidden");
+    
+    let statusColor = "#B45309";
+    let statusBg = "#FEF3C7";
+    let statusText = "🟡 Pendiente";
+    if (rx.status === "Enviada a Farmacia") {
+      statusColor = "#15803D";
+      statusBg = "#D1FAE5";
+      statusText = "🟢 Enviada a Farmacia";
+    }
+
+    container.innerHTML = `
+      <h4 style="font-size:0.85rem; font-weight:700; color:var(--text-dark); margin-bottom:8px;">Receta Activa Creada:</h4>
+      <div style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:8px; padding:12px; font-size:0.8rem; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <strong>Código: ${rx.code}</strong>
+          <span id="active-rx-badge" style="display: inline-block; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-size: 0.65rem; color: ${statusColor}; background-color: ${statusBg};">
+            ${statusText}
+          </span>
+        </div>
+        <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:8px;">
+          Fecha: ${rx.date} | Paciente: Andrés Mendoza Salgado
+        </div>
+        <div style="display:flex; flex-direction:column; gap:4px; max-height:80px; overflow-y:auto; border-top:1px dashed #E2E8F0; padding-top:6px; margin-bottom:6px;">
+          ${rx.medications.map(m => `<div>&bull; <strong>${m.name}</strong> - ${m.dosage}</div>`).join("")}
+        </div>
+        ${rx.farmaciaDestino ? `
+          <div style="font-size:0.75rem; color:#1E293B; border-top:1px solid #F1F5F9; padding-top:6px;">
+            <strong>Farmacia destino:</strong> ${rx.farmaciaDestino}<br>
+            <strong>Ref. Envío:</strong> ${rx.refNum}<br>
+            <strong>Fecha envío:</strong> ${rx.dateSent}
+          </div>
+        ` : ''}
+      </div>
+      
+      <button class="rx-form-btn ripple-btn" id="rx-btn-send-to-pharmacy" style="background-color:#007A64; color:#FFFFFF; border:none; width:100%; border-radius:8px; display:flex; align-items:center; justify-content:center; gap:6px; font-size:0.8rem; padding:10px;" ${rx.status === "Enviada a Farmacia" ? "disabled" : ""}>
+        <span class="material-symbols-rounded" style="font-size:1.1rem;">send_to_mobile</span>
+        ${rx.status === "Enviada a Farmacia" ? "Receta Enviada a Farmacia" : "📤 Enviar a Farmacia"}
+      </button>
+    `;
+
+    const sendBtn = document.getElementById("rx-btn-send-to-pharmacy");
+    if (sendBtn && rx.status !== "Enviada a Farmacia") {
+      sendBtn.onclick = () => {
+        showSendToPharmacyConfirmModal(rx);
+      };
+    }
+  };
+
+  window.showSendToPharmacyConfirmModal = function(rx) {
+    const overlay = document.createElement("div");
+    overlay.className = "rx-modal-overlay";
+    overlay.id = "rx-modal-confirm-pharmacy";
+    
+    overlay.innerHTML = `
+      <div class="rx-modal-card" style="max-width: 320px; border-radius:16px; padding:20px; text-align:left;">
+        <h3 style="font-size:1rem; font-weight:800; color:#0F172A; margin: 0 0 12px 0; border-bottom:1px solid #F1F5F9; padding-bottom:8px;">
+          Enviar receta electrónica
+        </h3>
+        
+        <div style="font-size:0.85rem; color:#475569; display:flex; flex-direction:column; gap:8px; margin-bottom:16px;">
+          <div>
+            <span style="display:block; font-size:0.7rem; font-weight:700; color:#94A3B8; text-transform:uppercase;">Paciente</span>
+            <strong>Andrés Mendoza Salgado</strong>
+          </div>
+          <div>
+            <span style="display:block; font-size:0.7rem; font-weight:700; color:#94A3B8; text-transform:uppercase;">Receta Ref</span>
+            <strong>${rx.code}</strong>
+          </div>
+          <div>
+            <span style="display:block; font-size:0.7rem; font-weight:700; color:#94A3B8; text-transform:uppercase;">Farmacia destino</span>
+            <strong>Honduras Medical Center Pharmacy</strong>
+          </div>
+        </div>
+        
+        <div class="rx-modal-actions" style="display:flex; gap:10px; justify-content:flex-end;">
+          <button class="rx-modal-action-btn cancel" id="pharmacy-btn-cancel" style="padding:8px 16px; font-size:0.8rem; border-radius:8px;">Cancelar</button>
+          <button class="rx-modal-action-btn confirm" id="pharmacy-btn-confirm" style="padding:8px 16px; font-size:0.8rem; border-radius:8px; background-color:#007A64; color:#FFFFFF;">Enviar</button>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(overlay);
+
+    document.getElementById("pharmacy-btn-cancel").onclick = () => {
+      overlay.remove();
+    };
+
+    document.getElementById("pharmacy-btn-confirm").onclick = () => {
+      overlay.remove();
+      
+      const rxList = getPrescriptions();
+      const storedRx = rxList.find(item => item.id === rx.id);
+      if (storedRx) {
+        storedRx.status = "Enviada a Farmacia";
+        storedRx.farmaciaDestino = "Honduras Medical Center Pharmacy";
+        
+        const today = new Date();
+        const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+        storedRx.dateSent = `${today.getDate()} ${months[today.getMonth()]} ${today.getFullYear()}`;
+        storedRx.refNum = `RX-2026-${Math.floor(100000 + Math.random() * 900000)}`;
+        
+        localStorage.setItem('hmc_prescriptions', JSON.stringify(rxList));
+        db.prescriptions = rxList;
+        
+        renderActivePrescriptionPanel(storedRx);
+        
+        showToast("✓ Electronic prescription successfully sent to the pharmacy.", "success");
+      }
+    };
   };
 
   switchTab("dashboard");

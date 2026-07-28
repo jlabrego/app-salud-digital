@@ -190,6 +190,46 @@
         <span class="material-symbols-rounded" style="color: var(--primary); font-size: 1.1rem;">arrow_forward_ios</span>
       </div>
 
+      <!-- Accesos Rápidos Grid -->
+      <div class="slide-up" style="margin-bottom: var(--space-md); text-align: left; font-family: var(--font-roboto);">
+        <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--text-dark); margin: 0 0 10px 0;">Accesos Rápidos</h3>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          
+          <!-- Agendar Cita -->
+          <div class="ripple-btn" data-nav="doctor-search" style="background-color: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 16px; padding: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background-color: #E0F2FE; color: #0284C7; display: flex; align-items: center; justify-content: center;">
+              <span class="material-symbols-rounded" style="font-size: 1.2rem;">medical_services</span>
+            </div>
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark);">Agendar Cita</span>
+          </div>
+
+          <!-- Mensajes -->
+          <div class="ripple-btn" data-nav="messages" style="background-color: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 16px; padding: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background-color: #E6F6F4; color: #007A64; display: flex; align-items: center; justify-content: center;">
+              <span class="material-symbols-rounded" style="font-size: 1.2rem;">chat</span>
+            </div>
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark);">Mensajes</span>
+          </div>
+
+          <!-- Expediente -->
+          <div class="ripple-btn" data-nav="records" style="background-color: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 16px; padding: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background-color: #FEF3C7; color: #D97706; display: flex; align-items: center; justify-content: center;">
+              <span class="material-symbols-rounded" style="font-size: 1.2rem;">folder_open</span>
+            </div>
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark);">Expediente</span>
+          </div>
+
+          <!-- Monitoreo Diario -->
+          <div class="ripple-btn" data-nav="health-monitoring" style="background-color: #FFFFFF; border: 1px solid #F1F5F9; border-radius: 16px; padding: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.01);">
+            <div style="width: 32px; height: 32px; border-radius: 8px; background-color: #FEE2E2; color: #DC2626; display: flex; align-items: center; justify-content: center;">
+              <span class="material-symbols-rounded" style="font-size: 1.2rem;">edit_note</span>
+            </div>
+            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-dark);">Monitoreo</span>
+          </div>
+
+        </div>
+      </div>
+
       <!-- Upcoming Appointment Banner -->
       <div class="md3-card-outlined slide-up" style="background-color: var(--primary-blue); color: #FFFFFF; border:none; box-shadow:var(--shadow-premium);">
         <div class="dashboard-apt-header">
@@ -362,9 +402,12 @@
         <!-- slots here -->
       </div>
 
-      <button class="onboarding-btn ripple-btn" id="confirm-booking-action" style="border-radius: 28px; margin-bottom: var(--space-xl);">
+      <button class="onboarding-btn ripple-btn" id="confirm-booking-action" style="border-radius: 28px; margin-bottom: var(--space-md);">
         Reservar Cita
       </button>
+      <div id="doctor-profile-messaging-section" style="margin: 0 var(--space-md) var(--space-xl) var(--space-md); text-align: center;">
+        <!-- Filled dynamically -->
+      </div>
     </div>
 
     <!-- 8. APPOINTMENT CONFIRMATION -->
@@ -468,8 +511,16 @@
 
     <!-- 12. MEDICAL RECORDS TAB -->
     <div class="screen hidden" id="screen-records">
-      <div class="md3-header">
-        <h2 class="md3-header-title">Expediente</h2>
+      <!-- Header with back button -->
+      <div class="md3-header" style="border: none; background: none; margin-bottom: 0; padding-bottom: 0;">
+        <button class="ios-header-back" data-nav="dashboard" style="color: var(--text-dark); background:none; border:none; display:flex; align-items:center; gap:4px; font-family:var(--font-roboto); cursor:pointer; padding: var(--space-xs) 0 0 0;">
+          <span class="material-symbols-rounded">arrow_back</span>
+          Volver
+        </button>
+      </div>
+
+      <div class="md3-header" style="margin-top: 0; padding-top: var(--space-xs);">
+        <h2 class="md3-header-title" style="margin:0;">Expediente</h2>
       </div>
 
       <div class="records-selector-tabs">
@@ -571,6 +622,22 @@
           <div class="settings-meta">
             <span class="material-symbols-rounded icon">person</span>
             <span>Mi Información Personal</span>
+          </div>
+          <span class="material-symbols-rounded" style="color:var(--text-muted); font-size:1rem;">arrow_forward_ios</span>
+        </div>
+
+        <div class="settings-item" data-nav="messages" style="border-radius: 16px; cursor: pointer;">
+          <div class="settings-meta">
+            <span class="material-symbols-rounded icon">chat</span>
+            <span>Mensajes Médicos</span>
+          </div>
+          <span class="material-symbols-rounded" style="color:var(--text-muted); font-size:1rem;">arrow_forward_ios</span>
+        </div>
+
+        <div class="settings-item" data-nav="qr-card" style="border-radius: 16px; cursor: pointer;">
+          <div class="settings-meta">
+            <span class="material-symbols-rounded icon">qr_code_2</span>
+            <span>Tarjeta Médica HMC</span>
           </div>
           <span class="material-symbols-rounded" style="color:var(--text-muted); font-size:1rem;">arrow_forward_ios</span>
         </div>
@@ -807,6 +874,134 @@
       <button class="onboarding-btn ripple-btn" onclick="savePatientProfileChanges()" style="margin-top: 24px; border-radius: 28px;">
         Guardar Cambios
       </button>
+    </div>
+
+    <!-- 18. MESSAGES SCREEN -->
+    <div class="screen hidden" id="screen-messages" style="padding-top: var(--space-md); padding-bottom: 100px; font-family: var(--font-roboto);">
+      <!-- Header with back button -->
+      <div class="md3-header" style="border: none; background: none; margin-bottom: 4px;">
+        <button class="ios-header-back" onclick="goBackFromMessages()" style="color: var(--text-dark); background:none; border:none; display:flex; align-items:center; gap:4px; font-family:var(--font-roboto); cursor:pointer;">
+          <span class="material-symbols-rounded">arrow_back</span>
+          Volver
+        </button>
+      </div>
+
+      <div class="ios-header" style="margin-top: 0; margin-bottom: var(--space-md); display: flex; justify-content: space-between; align-items: center; border:none; background:none;">
+        <h2 class="ios-large-title" style="margin:0; font-family: var(--font-roboto); font-weight:700;">Mensajes</h2>
+        <span style="font-size: 0.8rem; background-color: #E2E8F0; color: #475569; padding: 4px 10px; border-radius: 20px; font-weight: 700;">Seguimiento</span>
+      </div>
+
+      <div style="padding: 0 var(--space-md); margin-bottom: var(--space-md);">
+        <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; margin: 0;">
+          Comunicación de seguimiento clínico para pacientes crónicos y cuidado post-consulta.
+        </p>
+      </div>
+
+      <!-- Conversations container -->
+      <div id="messages-conversations-list" style="display: flex; flex-direction: column; gap: 12px; padding: 0 var(--space-md);">
+        <!-- Populated dynamically: Doctor cards -->
+      </div>
+      
+      <!-- Empty state placeholder -->
+      <div id="messages-empty-state" class="hidden" style="text-align: center; padding: 40px 20px; color: var(--text-muted);">
+        <span class="material-symbols-rounded" style="font-size: 3rem; color: #CBD5E1; margin-bottom: 12px;">chat_bubble_outline</span>
+        <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-dark); margin: 0 0 6px 0;">Sin conversaciones activas</h4>
+        <p style="font-size: 0.8rem; line-height: 1.4; margin: 0;">Los mensajes de seguimiento estarán disponibles después de tu primera consulta médica.</p>
+      </div>
+    </div>
+
+    <!-- 19. CHAT SESSION SCREEN -->
+    <div class="screen hidden" id="screen-chat-session" style="padding-top: 0; padding-bottom: 0; display: flex; flex-direction: column; height: 100%; background-color: #F8FAFC; font-family: var(--font-roboto);">
+      <!-- Chat Header -->
+      <div style="background-color: #FFFFFF; border-bottom: 1px solid #E2E8F0; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; z-index: 10;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <button class="ios-header-back" style="padding: 0; background: none; border: none; color: var(--primary); display: flex; align-items: center; font-size: 0.9rem; font-weight: 700; cursor: pointer; font-family:var(--font-roboto);" onclick="goBackToMessages()">
+            <span class="material-symbols-rounded" style="font-size: 1.6rem; margin-right: -4px;">chevron_left</span>
+            Atrás
+          </button>
+          
+          <img id="chat-doctor-avatar" src="assets/doctor_male_profile.png" style="width: 36px; height: 36px; border-radius: 50%; border: 1px solid #E2E8F0; object-fit: cover;">
+          <div style="text-align: left;">
+            <h4 id="chat-doctor-name" style="font-size: 0.88rem; font-weight: 700; color: var(--text-dark); margin: 0 0 2px 0;">Dr. Carlos Valladares</h4>
+            <span style="font-size: 0.72rem; background-color: #E6F6F4; color: #007A64; padding: 2px 6px; border-radius: 4px; font-weight: 700;">Caso en seguimiento</span>
+          </div>
+        </div>
+
+        <button id="chat-view-report-btn" style="border: 1px solid var(--primary); background-color: #FFFFFF; color: var(--primary); font-size: 0.75rem; font-weight: 700; border-radius: 8px; padding: 6px 12px; cursor: pointer; display: flex; align-items: center; gap: 4px; font-family:var(--font-roboto);" onclick="toggleChatReportOverlay()">
+          <span class="material-symbols-rounded" style="font-size: 0.95rem;">assignment</span>
+          Ver Reporte
+        </button>
+      </div>
+
+      <!-- Security Banner -->
+      <div style="background-color: #F0FDF4; border-bottom: 1px solid #DCFCE7; padding: 6px 12px; font-size: 0.7rem; color: #15803D; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 6px;">
+        <span class="material-symbols-rounded" style="font-size: 0.88rem; color: #16A34A;">shield</span>
+        <span>🔒 Comunicación médica cifrada y segura. Mensajes protegidos.</span>
+      </div>
+
+      <!-- Vitals Report Quick Overlay Sheet (Hidden by default) -->
+      <div id="chat-report-overlay" class="hidden" style="background-color: #FFFFFF; border-bottom: 1px solid #E2E8F0; padding: 12px 16px; font-family: inherit; z-index: 9; box-shadow: 0 4px 10px rgba(0,0,0,0.05); text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h5 style="margin: 0; font-size: 0.8rem; font-weight: 700; color: #007A64; text-transform: uppercase;">Último Reporte de Monitoreo Diario</h5>
+          <span style="font-size: 0.7rem; color: var(--text-muted);" id="chat-report-date">Hoy, 08:15 AM</span>
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+          <div style="background-color: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 8px; padding: 6px; font-size: 0.75rem;">
+            <div style="color: #64748B; font-weight: 600; font-size: 0.65rem;">Presión Art.</div>
+            <div style="font-weight: 700; color: #1E293B; margin-top: 2px;" id="chat-report-bp">120/80 mmHg</div>
+          </div>
+          <div style="background-color: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 8px; padding: 6px; font-size: 0.75rem;">
+            <div style="color: #64748B; font-weight: 600; font-size: 0.65rem;">Frec. Card.</div>
+            <div style="font-weight: 700; color: #1E293B; margin-top: 2px;" id="chat-report-hr">72 lpm</div>
+          </div>
+          <div style="background-color: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 8px; padding: 6px; font-size: 0.75rem;">
+            <div style="color: #64748B; font-weight: 600; font-size: 0.65rem;">Temperatura</div>
+            <div style="font-weight: 700; color: #1E293B; margin-top: 2px;" id="chat-report-temp">36.8 °C</div>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+          <div style="background-color: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 8px; padding: 6px; font-size: 0.75rem;">
+            <div style="color: #64748B; font-weight: 600; font-size: 0.65rem;">Dolor</div>
+            <div style="font-weight: 700; color: #1E293B; margin-top: 2px;" id="chat-report-pain">2 / 10</div>
+          </div>
+          <div style="background-color: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 8px; padding: 6px; font-size: 0.75rem;">
+            <div style="color: #64748B; font-weight: 600; font-size: 0.65rem;">Ánimo</div>
+            <div style="font-weight: 700; color: #1E293B; margin-top: 2px;" id="chat-report-mood">🙂 Bueno</div>
+          </div>
+        </div>
+
+        <div style="background-color: #F8FAFC; border: 1px solid #F1F5F9; border-radius: 8px; padding: 6px; font-size: 0.75rem;">
+          <div style="color: #64748B; font-weight: 600; font-size: 0.65rem;">Tomó medicamentos: <span style="font-weight: 700; color: #007A64;" id="chat-report-adherence">Sí</span></div>
+        </div>
+      </div>
+
+      <!-- Messages Stream -->
+      <div id="chat-messages-stream" style="flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px;">
+        <!-- Filled dynamically -->
+      </div>
+
+      <!-- Chat Input Area -->
+      <div style="background-color: #FFFFFF; border-top: 1px solid #E2E8F0; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <input type="text" id="chat-message-input" placeholder="Escribe un mensaje de seguimiento..." style="flex: 1; border: 1px solid #E2E8F0; border-radius: 20px; padding: 10px 16px; font-size: 0.85rem; outline: none; font-family: inherit;">
+          <button id="chat-send-btn" style="border: none; background-color: var(--primary); color: #FFFFFF; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" onclick="sendChatMessage()">
+            <span class="material-symbols-rounded" style="font-size: 1.2rem; transform: rotate(-30deg); margin-left: 2px; margin-top: -2px;">send</span>
+          </button>
+        </div>
+
+        <div style="display: flex; gap: 12px; align-items: center; padding-top: 4px;">
+          <button style="border: none; background: none; color: #64748B; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px; cursor: pointer; font-family:var(--font-roboto);" onclick="simulateAttachFile('doc')">
+            <span class="material-symbols-rounded" style="font-size: 1.1rem; color: var(--primary);">picture_as_pdf</span>
+            Adjuntar Documento
+          </button>
+          <button style="border: none; background: none; color: #64748B; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; gap: 4px; cursor: pointer; font-family:var(--font-roboto);" onclick="simulateAttachFile('img')">
+            <span class="material-symbols-rounded" style="font-size: 1.1rem; color: var(--primary);">image</span>
+            Adjuntar Imagen
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Android Floating Action Button (FAB) (Only visible on dashboard and appointments) -->
